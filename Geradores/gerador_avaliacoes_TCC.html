@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação Pré-TCC - ETEC Hortolândia</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter & Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background-color: white !important;
+                color: black !important;
+            }
+            .print-shadow {
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-full flex flex-col justify-between">
+
+    <header class="bg-gradient-to-r from-red-800 via-red-700 to-slate-900 text-white shadow-md no-print">
+        <div class="max-w-5xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <div class="bg-white text-red-800 p-3 rounded-xl shadow-inner font-bold text-xl flex items-center justify-center w-14 h-14">
+                    <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <div class="text-xs uppercase tracking-widest text-red-200 font-semibold">Centro Paula Souza</div>
+                    <h1 class="text-2xl font-bold tracking-tight">ETEC Hortolândia</h1>
+                    <p class="text-sm text-slate-200">Planejamento e Desenvolvimento de TCC</p>
+                </div>
+            </div>
+            <div class="bg-red-950/60 border border-red-700/50 px-4 py-2 rounded-lg text-center sm:text-right">
+                <span class="block text-xs text-red-300 font-medium">Avaliação de Pré-Banca</span>
+                <span class="text-sm font-semibold text-white">Ano Letivo 2026</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-8">
+        
+        <!-- Print Header (Visible only when printing) -->
+        <div class="hidden print:block mb-6 border-b-2 border-slate-800 pb-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">ETEC HORTOLÂNDIA</h2>
+                    <p class="text-sm text-slate-600">Planejamento e Desenvolvimento de TCC - Ficha de Avaliação Inicial</p>
+                </div>
+                <div class="text-right text-xs text-slate-500">
+                    <p>Data: ____/____/2026</p>
+                    <p>Avaliador(a): _______________________</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Form Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 print-shadow">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 mb-6 border-b border-slate-100 gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-file-lines text-red-700"></i> Ficha de Avaliação de Pré-TCC
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Preencha os dados da equipe e atribua as notas de 0 a 10 para cada critério ponderado.</p>
+                </div>
+                <div class="no-print flex items-center gap-2">
+                    <button type="button" onclick="resetForm()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-right"></i> Limpar
+                    </button>
+                    <button type="button" onclick="window.print()" class="px-4 py-2 text-sm font-medium text-white bg-red-700 hover:bg-red-800 rounded-lg shadow-sm transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-print"></i> Imprimir / Salvar PDF
+                    </button>
+                </div>
+            </div>
+
+            <form id="preTccForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Título Provisório -->
+                    <div class="space-y-2">
+                        <label for="titulo" class="block text-sm font-semibold text-slate-700">
+                            <i class="fa-solid fa-book-bookmark text-red-700 mr-1"></i> Título Provisório do TCC <span class="text-red-600">*</span>
+                        </label>
+                        <input type="text" id="titulo" required placeholder="Ex: Sistema IoT para Monitoramento Agrícola"
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 outline-none transition text-slate-800 placeholder-slate-400 text-sm">
+                    </div>
+
+                    <!-- Nome do Avaliador / Turma -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label for="avaliador" class="block text-sm font-semibold text-slate-700">
+                                <i class="fa-solid fa-user-tie text-red-700 mr-1"></i> Professor(a) / Avaliador(a)
+                            </label>
+                            <input type="text" id="avaliador" placeholder="Nome do Avaliador"
+                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 outline-none transition text-slate-800 placeholder-slate-400 text-sm">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="turma" class="block text-sm font-semibold text-slate-700">
+                                <i class="fa-solid fa-users-rectangle text-red-700 mr-1"></i> Módulo / Turma
+                            </label>
+                            <input type="text" id="turma" placeholder="Ex: 3º DS / 3º MTEC"
+                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 outline-none transition text-slate-800 placeholder-slate-400 text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nome da Equipe / Integrantes -->
+                <div class="space-y-2">
+                    <label for="equipe" class="block text-sm font-semibold text-slate-700">
+                        <i class="fa-solid fa-users text-red-700 mr-1"></i> Nome da Equipe e Integrantes <span class="text-red-600">*</span>
+                    </label>
+                    <textarea id="equipe" rows="3" required placeholder="Digite o nome da equipe e liste os integrantes (um por linha)..."
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 outline-none transition text-slate-800 placeholder-slate-400 text-sm resize-y"></textarea>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-clipboard-check text-red-700"></i> Critérios de Avaliação (Peso Total = 10.0)
+                        </h3>
+                        <span class="text-xs bg-red-100 text-red-800 font-semibold px-2.5 py-1 rounded-full">Nota 0 a 10 por critério</span>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-700 text-xs uppercase tracking-wider border-b border-slate-200">
+                                    <th class="py-3 px-4 font-semibold w-12 text-center">#</th>
+                                    <th class="py-3 px-4 font-semibold w-1/3">Critério de Avaliação</th>
+                                    <th class="py-3 px-4 font-semibold">Descrição do Critério</th>
+                                    <th class="py-3 px-4 font-semibold text-center w-24">Peso</th>
+                                    <th class="py-3 px-4 font-semibold text-center w-28">Nota (0-10)</th>
+                                    <th class="py-3 px-4 font-semibold text-right w-28">Ponderada</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-sm bg-white" id="criteriaTableBody">
+                                <!-- Linha 1 -->
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="py-3 px-4 text-center font-medium text-slate-500">1</td>
+                                    <td class="py-3 px-4 font-semibold text-slate-800">Relevância e Pertinência do Tema</td>
+                                    <td class="py-3 px-4 text-slate-600 text-xs">Importância tecnológica, social ou mercadológica do tema escolhido.</td>
+                                    <td class="py-3 px-4 text-center font-semibold text-slate-700 peso" data-peso="2.0">2.0</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <input type="number" min="0" max="10" step="0.1" class="nota-input w-20 text-center px-2 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-red-700 outline-none text-sm font-medium" placeholder="0.0" oninput="calcularTotal()">
+                                    </td>
+                                    <td class="py-3 px-4 text-right font-bold text-slate-800 ponderada-val">0.00</td>
+                                </tr>
+                                <!-- Linha 2 -->
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="py-3 px-4 text-center font-medium text-slate-500">2</td>
+                                    <td class="py-3 px-4 font-semibold text-slate-800">Clareza do Problema / Justificativa</td>
+                                    <td class="py-3 px-4 text-slate-600 text-xs">Delimitação clara do problema de pesquisa e solidez da justificativa.</td>
+                                    <td class="py-3 px-4 text-center font-semibold text-slate-700 peso" data-peso="2.0">2.0</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <input type="number" min="0" max="10" step="0.1" class="nota-input w-20 text-center px-2 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-red-700 outline-none text-sm font-medium" placeholder="0.0" oninput="calcularTotal()">
+                                    </td>
+                                    <td class="py-3 px-4 text-right font-bold text-slate-800 ponderada-val">0.00</td>
+                                </tr>
+                                <!-- Linha 3 -->
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="py-3 px-4 text-center font-medium text-slate-500">3</td>
+                                    <td class="py-3 px-4 font-semibold text-slate-800">Objetivos (Geral e Específicos)</td>
+                                    <td class="py-3 px-4 text-slate-600 text-xs">Coerência, clareza e exequibilidade dos objetivos propostos.</td>
+                                    <td class="py-3 px-4 text-center font-semibold text-slate-700 peso" data-peso="2.0">2.0</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <input type="number" min="0" max="10" step="0.1" class="nota-input w-20 text-center px-2 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-red-700 outline-none text-sm font-medium" placeholder="0.0" oninput="calcularTotal()">
+                                    </td>
+                                    <td class="py-3 px-4 text-right font-bold text-slate-800 ponderada-val">0.00</td>
+                                </tr>
+                                <!-- Linha 4 -->
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="py-3 px-4 text-center font-medium text-slate-500">4</td>
+                                    <td class="py-3 px-4 font-semibold text-slate-800">Metodologia Proposta</td>
+                                    <td class="py-3 px-4 text-slate-600 text-xs">Adequação dos métodos, tecnologias e ferramentas planejadas para o desenvolvimento.</td>
+                                    <td class="py-3 px-4 text-center font-semibold text-slate-700 peso" data-peso="1.5">1.5</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <input type="number" min="0" max="10" step="0.1" class="nota-input w-20 text-center px-2 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-red-700 outline-none text-sm font-medium" placeholder="0.0" oninput="calcularTotal()">
+                                    </td>
+                                    <td class="py-3 px-4 text-right font-bold text-slate-800 ponderada-val">0.00</td>
+                                </tr>
+                                <!-- Linha 5 -->
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="py-3 px-4 text-center font-medium text-slate-500">5</td>
+                                    <td class="py-3 px-4 font-semibold text-slate-800">Viabilidade e Cronograma</td>
+                                    <td class="py-3 px-4 text-slate-600 text-xs">Realismo no planejamento de tempo e recursos disponíveis para conclusão.</td>
+                                    <td class="py-3 px-4 text-center font-semibold text-slate-700 peso" data-peso="1.5">1.5</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <input type="number" min="0" max="10" step="0.1" class="nota-input w-20 text-center px-2 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-red-700 outline-none text-sm font-medium" placeholder="0.0" oninput="calcularTotal()">
+                                    </td>
+                                    <td class="py-3 px-4 text-right font-bold text-slate-800 ponderada-val">0.00</td>
+                                </tr>
+                                <!-- Linha 6 -->
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="py-3 px-4 text-center font-medium text-slate-500">6</td>
+                                    <td class="py-3 px-4 font-semibold text-slate-800">Apresentação e Postura da Equipe</td>
+                                    <td class="py-3 px-4 text-slate-600 text-xs">Clareza na exposição, domínio do tema e segurança nas respostas à banca.</td>
+                                    <td class="py-3 px-4 text-center font-semibold text-slate-700 peso" data-peso="1.0">1.0</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <input type="number" min="0" max="10" step="0.1" class="nota-input w-20 text-center px-2 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700 focus:border-red-700 outline-none text-sm font-medium" placeholder="0.0" oninput="calcularTotal()">
+                                    </td>
+                                    <td class="py-3 px-4 text-right font-bold text-slate-800 ponderada-val">0.00</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-slate-100 font-bold text-slate-900 border-t border-slate-300">
+                                    <td colspan="3" class="py-3 px-4 text-right uppercase text-xs tracking-wider">Nota Final Ponderada:</td>
+                                    <td class="py-3 px-4 text-center text-slate-700">10.0</td>
+                                    <td class="py-3 px-4"></td>
+                                    <td class="py-3 px-4 text-right text-lg text-red-800" id="notaFinalTotal">0.00</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="space-y-2 pt-2">
+                    <label for="observacoes" class="block text-sm font-semibold text-slate-700">
+                        <i class="fa-solid fa-comment-dots text-red-700 mr-1"></i> Observações, Recomendações e Feedback da Banca
+                    </label>
+                    <textarea id="observacoes" rows="4" placeholder="Insira comentários construtivos, pontos fortes e melhorias sugeridas para o projeto..."
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 outline-none transition text-slate-800 placeholder-slate-400 text-sm resize-y"></textarea>
+                </div>
+
+                <!-- Assinaturas / Rodapé Impressão -->
+                <div class="hidden print:grid grid-cols-2 gap-12 pt-16 text-center text-sm">
+                    <div class="border-t border-slate-400 pt-2">
+                        <p class="font-semibold text-slate-800">Assinatura do(a) Professor(a) / Avaliador(a)</p>
+                    </div>
+                    <div class="border-t border-slate-400 pt-2">
+                        <p class="font-semibold text-slate-800">Assinatura de um Representante da Equipe</p>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800 mt-12 no-print">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+            <div>
+                <p class="font-semibold text-slate-300">ETEC Hortolândia — Escola Técnica Estadual de Hortolândia</p>
+                <p class="mt-1">Componente Curricular: Planejamento e Desenvolvimento de Trabalho de Conclusão de Curso (TCC)</p>
+            </div>
+            <div class="text-slate-500">
+                Sistema de Avaliação Pré-Banca v1.0
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function calcularTotal() {
+            const rows = document.querySelectorAll('#criteriaTableBody tr');
+            let somaPonderada = 0;
+
+            rows.forEach(row => {
+                const pesoEl = row.querySelector('.peso');
+                const notaInput = row.querySelector('.nota-input');
+                const ponderadaValEl = row.querySelector('.ponderada-val');
+
+                const peso = parseFloat(pesoEl.getAttribute('data-peso')) || 0;
+                let nota = parseFloat(notaInput.value);
+
+                if (isNaN(nota)) {
+                    nota = 0;
+                } else {
+                    // Garante limites de 0 a 10
+                    if (nota > 10) nota = 10;
+                    if (nota < 0) nota = 0;
+                }
+
+                const calculo = (nota * peso) / 10; // Nota ponderada proporcional à base 10
+                somaPonderada += calculo;
+
+                ponderadaValEl.textContent = calculo.toFixed(2);
+            });
+
+            const notaFinalEl = document.getElementById('notaFinalTotal');
+            notaFinalEl.textContent = somaPonderada.toFixed(2);
+
+            // Mudança visual rápida de destaque se aprovado ou não (ex: >= 6.0)
+            if (somaPonderada >= 6.0) {
+                notaFinalEl.className = "py-3 px-4 text-right text-lg font-bold text-emerald-600";
+            } else if (somaPonderada > 0) {
+                notaFinalEl.className = "py-3 px-4 text-right text-lg font-bold text-amber-600";
+            } else {
+                notaFinalEl.className = "py-3 px-4 text-right text-lg font-bold text-red-800";
+            }
+        }
+
+        function resetForm() {
+            if (confirm("Deseja realmente limpar todos os campos preenchidos?")) {
+                document.getElementById('preTccForm').reset();
+                calcularTotal();
+            }
+        }
+
+        // Inicializa ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            calcularTotal();
+        });
+    </script>
+
+</body>
+</html>

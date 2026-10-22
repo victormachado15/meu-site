@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Avaliações - Etec Hortolândia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .brand-logos { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .brand-logo { width: 82px; height: 54px; padding: 5px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e2e8f0; border-radius: 4px; }
+        .brand-logo-governo { background: #7f1d1d; border-color: #7f1d1d; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        .brand-logo img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .print-shadow { box-shadow: none !important; border: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col font-sans text-slate-800">
+
+    <!-- CABEÇALHO INSTITUCIONAL OFICIAL -->
+    <header class="bg-red-800 text-white shadow-md no-print">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <div data-marcas-institucionais class="brand-logos" aria-label="Marcas institucionais"></div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide">ETEC HORTOLÂNDIA</h1>
+                    <p class="text-xs text-red-200">Centro Paula Souza — Governo do Estado de São Paulo</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="switchTab('professor')" id="btnTabProf" class="px-4 py-2 bg-red-900 hover:bg-red-950 text-sm font-semibold rounded transition shadow flex items-center gap-2">
+                    <i class="fa-solid fa-chalkboard-user"></i> Painel do Professor
+                </button>
+                <button onclick="switchTab('aluno')" id="btnTabAluno" class="px-4 py-2 bg-red-700 hover:bg-red-800 text-sm font-semibold rounded transition shadow flex items-center gap-2 opacity-80">
+                    <i class="fa-solid fa-user-graduate"></i> Visualizar Aluno
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 md:p-6">
+
+        <!-- PAINEL DO PROFESSOR -->
+        <section id="tabProfessor" class="space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Gerador de Provas</h2>
+                        <p class="text-sm text-slate-500">Configure os dados, adicione imagens do dispositivo e monte as questões (5ª alternativa opcional).</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 no-print">
+                        <button onclick="salvarRascunho()" class="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded shadow transition flex items-center gap-1">
+                            <i class="fa-solid fa-floppy-disk"></i> Salvar Rascunho
+                        </button>
+                        <button onclick="carregarRascunho()" class="px-3 py-2 bg-slate-600 hover:bg-slate-700 text-white text-xs font-semibold rounded shadow transition flex items-center gap-1">
+                            <i class="fa-solid fa-folder-open"></i> Carregar Rascunho
+                        </button>
+                        <button onclick="exportarProvaPdf()" class="px-3 py-2 bg-red-700 hover:bg-red-800 text-white text-xs font-semibold rounded shadow transition flex items-center gap-1">
+                            <i class="fa-solid fa-file-pdf"></i> Exportar Prova / PDF
+                        </button>
+                        <button onclick="gerarHtmlAluno()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded shadow transition flex items-center gap-1">
+                            <i class="fa-solid fa-file-code"></i> Gerar HTML Aluno
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CABEÇALHO DA AVALIAÇÃO -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Componente / Matéria</label>
+                        <input type="text" id="materia" class="w-full p-2 border border-slate-300 rounded text-sm" value="Desenvolvimento Web II">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Professor(a)</label>
+                        <input type="text" id="professor" class="w-full p-2 border border-slate-300 rounded text-sm" value="Nome do Professor">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Turma / Módulo</label>
+                        <input type="text" id="turma" class="w-full p-2 border border-slate-300 rounded text-sm" value="3º Informática">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Valor Total (Pts)</label>
+                        <input type="number" id="valorTotal" class="w-full p-2 border border-slate-300 rounded text-sm" value="10.0">
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Instruções Gerais para a Prova</label>
+                    <textarea id="instrucoes" rows="2" class="w-full p-2 border border-slate-300 rounded text-sm">Leia atentamente as questões antes de responder. Responda com clareza e utilize caneta azul ou preta.</textarea>
+                </div>
+
+                <!-- LISTA DE QUESTÕES -->
+                <div class="space-y-4 mb-6" id="listaQuestoes"></div>
+
+                <!-- BOTÕES DE ADICIONAR QUESTÃO -->
+                <div class="flex flex-wrap gap-2 pt-4 border-t border-slate-100">
+                    <button onclick="adicionarQuestao('multipla')" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded shadow">
+                        <i class="fa-solid fa-plus mr-1"></i> Múltipla Escolha (5 Alternativas)
+                    </button>
+                    <button onclick="adicionarQuestao('discursiva')" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded shadow">
+                        <i class="fa-solid fa-plus mr-1"></i> Discursiva
+                    </button>
+                    <button onclick="adicionarQuestao('vf')" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded shadow">
+                        <i class="fa-solid fa-plus mr-1"></i> Verdadeiro / Falso
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAINEL DO ALUNO -->
+        <section id="tabAluno" class="hidden space-y-6">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200 print-shadow">
+                <!-- Cabeçalho Oficial Impresso -->
+                <div class="border-b-2 border-red-800 pb-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex flex-col sm:flex-row items-center gap-3">
+                        <div data-marcas-institucionais class="brand-logos" aria-label="Marcas institucionais"></div>
+                        <div class="text-center md:text-left">
+                            <h2 class="text-xl font-bold text-red-900">ETEC HORTOLÂNDIA</h2>
+                            <p class="text-xs text-slate-600">Centro Paula Souza — Governo do Estado de São Paulo</p>
+                        </div>
+                    </div>
+                    <div class="text-center md:text-right text-xs text-slate-600">
+                        <p><strong>Matéria:</strong> <span id="lblMateria">-</span></p>
+                        <p><strong>Professor(a):</strong> <span id="lblProfessor">-</span></p>
+                        <p><strong>Turma:</strong> <span id="lblTurma">-</span></p>
+                    </div>
+                </div>
+
+                <!-- Identificação do Aluno -->
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo do Aluno</label>
+                        <input type="text" id="alunoNome" class="w-full p-2 border border-slate-300 rounded text-sm bg-white" placeholder="Digite seu nome completo">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Número / RA</label>
+                        <input type="text" id="alunoNumero" class="w-full p-2 border border-slate-300 rounded text-sm bg-white" placeholder="Digite seu número">
+                    </div>
+                </div>
+
+                <div class="mb-6 p-3 bg-red-50 border-l-4 border-red-800 text-xs text-red-900 rounded">
+                    <strong>Instruções:</strong> <span id="lblInstrucoes">-</span>
+                </div>
+
+                <!-- Questões do Aluno -->
+                <div id="provaAlunoContainer" class="space-y-6"></div>
+
+                <!-- Botões de Ação do Aluno -->
+                <div class="mt-8 pt-4 border-t border-slate-200 flex flex-wrap justify-between items-center gap-4 no-print">
+                    <button onclick="finalizarProva()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Finalizar e Enviar Prova
+                    </button>
+                    <button onclick="window.print()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-print"></i> Exportar para PDF / Imprimir
+                    </button>
+                </div>
+                <div id="resultadoContainer" class="mt-4 hidden p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 font-medium text-center"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- RODAPÉ INSTITUCIONAL E AUTORAL -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 mt-auto border-t border-slate-800 no-print">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div>
+                <p class="font-semibold text-slate-200">Etec Hortolândia — Centro Paula Souza</p>
+                <p>Governo do Estado de São Paulo</p>
+            </div>
+            <div>
+                <p>Desenvolvido por <strong>Victor de Andrade Machado</strong> (TraceTech)</p>
+                <p class="text-slate-500">&copy; <span id="currentYear"></span> Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT DE CONTROLE -->
+    <script>
+        const LOGO_CPS_URL = 'https://bkpsitecpsnew.blob.core.windows.net/uploadsitecps/sites/1/2022/09/logo-cps-2022.svg';
+        const LOGO_GOVERNO_SP_URL = 'https://bkpsitecpsnew.blob.core.windows.net/uploadsitecps/sites/1/2026/06/logo-brasao-do-estado-sp.png';
+
+        function renderizarMarcasInstitucionais(logoCps = LOGO_CPS_URL, logoGoverno = LOGO_GOVERNO_SP_URL) {
+            return `<div class="brand-logo"><img src="${logoCps}" alt="Centro Paula Souza"></div>
+                <div class="brand-logo brand-logo-governo"><img src="${logoGoverno}" alt="Governo do Estado de São Paulo"></div>`;
+        }
+
+        async function converterImagemParaDataUri(url) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Falha ao carregar imagem: ${response.status}`);
+            }
+
+            const imagem = await response.blob();
+            return new Promise((resolve, reject) => {
+                const leitor = new FileReader();
+                leitor.onload = () => resolve(leitor.result);
+                leitor.onerror = () => reject(leitor.error);
+                leitor.readAsDataURL(imagem);
+            });
+        }
+
+        document.querySelectorAll('[data-marcas-institucionais]').forEach(container => {
+            container.innerHTML = renderizarMarcasInstitucionais();
+        });
+
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        let questoes = [
+            {
+                id: 1,
+                tipo: 'multipla',
+                enunciado: 'Qual tag HTML é utilizada para estruturar o título principal de uma página?',
+                valor: '2.5',
+                opcoes: ['<h1>', '<p>', '<a>', '<div>', ''],
+                correta: 0,
+                imagem: ''
+            }
+        ];
+
+        function switchTab(tab) {
+            if (tab === 'professor') {
+                document.getElementById('tabProfessor').classList.remove('hidden');
+                document.getElementById('tabAluno').classList.add('hidden');
+                document.getElementById('btnTabProf').classList.replace('opacity-80', 'opacity-100');
+                document.getElementById('btnTabAluno').classList.replace('opacity-100', 'opacity-80');
+            } else {
+                atualizarVisualizacaoAluno();
+                document.getElementById('tabProfessor').classList.add('hidden');
+                document.getElementById('tabAluno').classList.remove('hidden');
+                document.getElementById('btnTabAluno').classList.replace('opacity-80', 'opacity-100');
+                document.getElementById('btnTabProf').classList.replace('opacity-100', 'opacity-80');
+            }
+        }
+
+        function escaparHtml(valor) {
+            return String(valor ?? '').replace(/[&<>"']/g, caractere => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[caractere]);
+        }
+
+        function renderizarQuestoesProf() {
+            const container = document.getElementById('listaQuestoes');
+            container.innerHTML = '';
+
+            questoes.forEach((q, index) => {
+                let div = document.createElement('div');
+                div.className = 'p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3';
+                
+                let imgPreview = q.imagem ? `<div class="mt-2"><img src="${escaparHtml(q.imagem)}" class="h-24 rounded border object-contain"><button onclick="removerImagem(${index})" class="text-xs text-red-600 mt-1 hover:underline block">Remover imagem</button></div>` : '';
+
+                let html = `
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-600 uppercase">Questão ${index + 1} (${q.tipo})</span>
+                        <div class="flex items-center gap-2">
+                            <input type="number" value="${escaparHtml(q.valor)}" oninput="atualizarQuestao(${index}, 'valor', this.value)" class="w-16 p-1 border rounded text-xs text-center" placeholder="Valor">
+                            <button onclick="removerQuestao(${index})" class="text-red-600 hover:text-red-800 text-xs font-semibold px-2 py-1 bg-red-50 rounded">Remover</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">Enunciado da Questão</label>
+                        <textarea oninput="atualizarQuestao(${index}, 'enunciado', this.value)" rows="2" class="w-full p-2 border rounded text-xs bg-white">${escaparHtml(q.enunciado)}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">Inserir Imagem do Dispositivo</label>
+                        <input type="file" accept="image/*" onchange="tratarImagem(event, ${index})" class="w-full text-xs text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                        ${imgPreview}
+                    </div>
+                `;
+
+                if (q.tipo === 'multipla') {
+                    html += `<div class="space-y-2 mt-2"><label class="block text-xs font-medium text-slate-700">Alternativas (Marque a correta - 5ª é opcional):</label>`;
+                    q.opcoes.forEach((op, optIndex) => {
+                        let placeholderText = optIndex === 4 ? `Opção ${optIndex + 1} (Opcional)` : `Opção ${optIndex + 1}`;
+                        html += `
+                            <div class="flex items-center gap-2">
+                                <input type="radio" name="correta_${index}" ${q.correta === optIndex ? 'checked' : ''} onclick="atualizarCorreta(${index}, ${optIndex})">
+                                <input type="text" value="${escaparHtml(op)}" oninput="atualizarOpcao(${index}, ${optIndex}, this.value)" class="w-full p-1.5 border rounded text-xs bg-white" placeholder="${placeholderText}">
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                } else if (q.tipo === 'vf') {
+                    html += `
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700 mb-1">Gabarito (Verdadeiro ou Falso):</label>
+                            <select onchange="atualizarQuestao(${index}, 'gabaritoVF', this.value === 'true')" class="w-full p-2 border rounded text-xs bg-white">
+                                <option value="true" ${q.gabaritoVF ? 'selected' : ''}>Verdadeiro (V)</option>
+                                <option value="false" ${!q.gabaritoVF ? 'selected' : ''}>Falso (F)</option>
+                            </select>
+                        </div>
+                    `;
+                }
+
+                div.innerHTML = html;
+                container.appendChild(div);
+            });
+        }
+
+        function tratarImagem(event, index) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    questoes[index].imagem = e.target.result;
+                    renderizarQuestoesProf();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removerImagem(index) {
+            questoes[index].imagem = '';
+            renderizarQuestoesProf();
+        }
+
+        function adicionarQuestao(tipo) {
+            let nova = {
+                id: questoes.length + 1,
+                tipo: tipo,
+                enunciado: 'Nova questão...',
+                valor: '1.0',
+                opcoes: tipo === 'multipla' ? ['', '', '', '', ''] : [],
+                correta: 0,
+                gabaritoVF: true,
+                imagem: ''
+            };
+            questoes.push(nova);
+            renderizarQuestoesProf();
+        }
+
+        function removerQuestao(index) {
+            questoes.splice(index, 1);
+            renderizarQuestoesProf();
+        }
+
+        function atualizarQuestao(index, campo, valor) {
+            questoes[index][campo] = valor;
+        }
+
+        function atualizarOpcao(qIndex, optIndex, valor) {
+            questoes[qIndex].opcoes[optIndex] = valor;
+        }
+
+        function atualizarCorreta(qIndex, optIndex) {
+            questoes[qIndex].correta = optIndex;
+        }
+
+        function salvarRascunho() {
+            const dados = {
+                materia: document.getElementById('materia').value,
+                professor: document.getElementById('professor').value,
+                turma: document.getElementById('turma').value,
+                valorTotal: document.getElementById('valorTotal').value,
+                instrucoes: document.getElementById('instrucoes').value,
+                questoes: questoes
+            };
+            localStorage.setItem('etec_rascunho_prova', JSON.stringify(dados));
+            alert('Rascunho salvo com sucesso!');
+        }
+
+        function carregarRascunho() {
+            const salvo = localStorage.getItem('etec_rascunho_prova');
+            if (!salvo) {
+                alert('Nenhum rascunho encontrado.');
+                return;
+            }
+            const dados = JSON.parse(salvo);
+            document.getElementById('materia').value = dados.materia || '';
+            document.getElementById('professor').value = dados.professor || '';
+            document.getElementById('turma').value = dados.turma || '';
+            document.getElementById('valorTotal').value = dados.valorTotal || '';
+            document.getElementById('instrucoes').value = dados.instrucoes || '';
+            questoes = dados.questoes || [];
+            renderizarQuestoesProf();
+            alert('Rascunho carregado com sucesso!');
+        }
+
+        function atualizarVisualizacaoAluno() {
+            document.getElementById('lblMateria').textContent = document.getElementById('materia').value;
+            document.getElementById('lblProfessor').textContent = document.getElementById('professor').value;
+            document.getElementById('lblTurma').textContent = document.getElementById('turma').value;
+            document.getElementById('lblInstrucoes').textContent = document.getElementById('instrucoes').value;
+
+            const container = document.getElementById('provaAlunoContainer');
+            container.innerHTML = '';
+
+            questoes.forEach((q, index) => {
+                let div = document.createElement('div');
+                div.className = 'p-5 bg-white border border-slate-200 rounded-lg shadow-sm space-y-3';
+                
+                let imgHtml = q.imagem ? `<div class="my-2"><img src="${escaparHtml(q.imagem)}" class="max-h-48 rounded border border-slate-200 object-contain"></div>` : '';
+
+                let html = `
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-sm font-bold text-slate-800">Questão ${index + 1}</h3>
+                        <span class="text-xs font-semibold px-2 py-0.5 bg-slate-100 text-slate-700 rounded">(${escaparHtml(q.valor)} pts)</span>
+                    </div>
+                    <p class="text-sm text-slate-700">${escaparHtml(q.enunciado)}</p>
+                    ${imgHtml}
+                `;
+
+                if (q.tipo === 'multipla') {
+                    html += `<div class="space-y-2 mt-3">`;
+                    q.opcoes.forEach((op, optIndex) => {
+                        if (op.trim() !== '') {
+                            html += `
+                                <label class="flex items-center gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer text-sm">
+                                    <input type="radio" name="resposta_${index}" value="${optIndex}" class="text-red-800">
+                                    <span>${escaparHtml(op)}</span>
+                                </label>
+                            `;
+                        }
+                    });
+                    html += `</div>`;
+                } else if (q.tipo === 'discursiva') {
+                    html += `<div class="mt-3"><textarea name="resposta_${index}" rows="3" class="w-full p-2 border rounded text-sm bg-slate-50" placeholder="Digite sua resposta..."></textarea></div>`;
+                } else if (q.tipo === 'vf') {
+                    html += `
+                        <div class="mt-3 flex gap-4">
+                            <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="resposta_${index}" value="true"> Verdadeiro</label>
+                            <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="resposta_${index}" value="false"> Falso</label>
+                        </div>
+                    `;
+                }
+
+                div.innerHTML = html;
+                container.appendChild(div);
+            });
+        }
+
+        function finalizarProva() {
+            let nome = document.getElementById('alunoNome').value;
+            let numero = document.getElementById('alunoNumero').value;
+            if (!nome || !numero) {
+                alert('Por favor, preencha seu Nome e Número/RA antes de finalizar.');
+                return;
+            }
+
+            let pontuadas = 0;
+            let totalVal = 0;
+
+            questoes.forEach((q, index) => {
+                let val = parseFloat(q.valor) || 0;
+                totalVal += val;
+                if (q.tipo === 'multipla') {
+                    let sel = document.querySelector(`input[name="resposta_${index}"]:checked`);
+                    if (sel && parseInt(sel.value) === q.correta) {
+                        pontuadas += val;
+                    }
+                } else if (q.tipo === 'vf') {
+                    let sel = document.querySelector(`input[name="resposta_${index}"]:checked`);
+                    let valBool = sel ? (sel.value === 'true') : null;
+                    if (valBool === q.gabaritoVF) {
+                        pontuadas += val;
+                    }
+                }
+            });
+
+            let resDiv = document.getElementById('resultadoContainer');
+            resDiv.classList.remove('hidden');
+            resDiv.innerHTML = `Aluno(a): <strong>${nome}</strong> (${numero}) — Nota Obtida: <strong>${pontuadas.toFixed(1)}</strong> de ${totalVal.toFixed(1)} pontos.`;
+            alert('Prova enviada com sucesso!');
+        }
+
+        function exportarProvaPdf() {
+            if (questoes.length === 0) {
+                alert('Adicione ao menos uma questão antes de exportar.');
+                return;
+            }
+
+            const janela = window.open('', '_blank');
+            if (!janela) {
+                alert('Permita a abertura de pop-ups para gerar a prova em PDF.');
+                return;
+            }
+
+            const materia = document.getElementById('materia').value;
+            const alternativasPorQuestao = [];
+            const provaHtml = questoes.map((q, index) => {
+                const alternativas = (Array.isArray(q.opcoes) ? q.opcoes : [])
+                    .map((texto, indice) => ({ texto: String(texto ?? '').trim(), indice }))
+                    .filter(alternativa => alternativa.texto !== '');
+                alternativasPorQuestao.push(alternativas);
+
+                let respostasHtml = '';
+                if (q.tipo === 'multipla') {
+                    respostasHtml = alternativas.map((alternativa, alternativaIndex) => `
+                        <div class="alternativa"><span class="marcador">( )</span><strong>${String.fromCharCode(65 + alternativaIndex)})</strong> ${escaparHtml(alternativa.texto)}</div>
+                    `).join('');
+                } else if (q.tipo === 'vf') {
+                    respostasHtml = '<div class="alternativa"><span class="marcador">( )</span> Verdadeiro <span class="marcador">( )</span> Falso</div>';
+                } else {
+                    respostasHtml = '<div class="linhas-resposta"></div>';
+                }
+
+                const imagemHtml = q.imagem
+                    ? `<img class="imagem-questao" src="${escaparHtml(q.imagem)}" alt="Imagem da questão ${index + 1}">`
+                    : '';
+
+                return `
+                    <section class="questao">
+                        <div class="questao-cabecalho"><strong>Questão ${index + 1}</strong><span>${escaparHtml(q.valor)} pts</span></div>
+                        <p class="enunciado">${escaparHtml(q.enunciado)}</p>
+                        ${imagemHtml}
+                        <div class="respostas">${respostasHtml}</div>
+                    </section>
+                `;
+            }).join('');
+
+            const gabaritoHtml = questoes.map((q, index) => {
+                let resposta = 'Correção manual';
+                if (q.tipo === 'multipla') {
+                    const alternativas = alternativasPorQuestao[index];
+                    const corretaIndex = alternativas.findIndex(alternativa => alternativa.indice === Number(q.correta));
+                    resposta = corretaIndex >= 0
+                        ? `${String.fromCharCode(65 + corretaIndex)} - ${escaparHtml(alternativas[corretaIndex].texto)}`
+                        : 'Alternativa correta não definida';
+                } else if (q.tipo === 'vf') {
+                    resposta = q.gabaritoVF ? 'Verdadeiro' : 'Falso';
+                }
+                return `<li><strong>Questão ${index + 1}:</strong> ${resposta}</li>`;
+            }).join('');
+
+            janela.onload = () => {
+                janela.focus();
+                janela.print();
+            };
+            janela.document.open();
+            janela.document.write(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prova - ${escaparHtml(materia)}</title>
+    <style>
+        @page { size: A4; margin: 16mm; }
+        * { box-sizing: border-box; }
+        body { margin: 0; color: #1f2937; font: 11pt Arial, sans-serif; }
+        .brand-logos { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .brand-logo { width: 76px; height: 48px; padding: 4px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e2e8f0; border-radius: 3px; }
+        .brand-logo-governo { background: #7f1d1d; border-color: #7f1d1d; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        .brand-logo img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+        .folha { max-width: 210mm; margin: 0 auto; padding: 12mm; }
+        .cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 2px solid #991b1b; padding-bottom: 12px; margin-bottom: 16px; }
+        .cabecalho-identidade { display: flex; align-items: center; gap: 10px; }
+        .cabecalho h1 { margin: 0 0 4px; color: #7f1d1d; font-size: 18pt; }
+        .cabecalho p, .metadados p { margin: 3px 0; font-size: 9pt; }
+        .metadados { text-align: right; }
+        .identificacao { display: flex; gap: 24px; margin: 20px 0; }
+        .campo-identificacao { flex: 1; border-bottom: 1px solid #4b5563; padding-bottom: 5px; }
+        .instrucoes { white-space: pre-wrap; margin: 16px 0 22px; padding: 10px; border-left: 3px solid #991b1b; background: #f9fafb; font-size: 10pt; }
+        .questao { break-inside: avoid; margin: 0 0 22px; }
+        .questao-cabecalho { display: flex; justify-content: space-between; border-bottom: 1px solid #d1d5db; padding-bottom: 5px; }
+        .enunciado { white-space: pre-wrap; margin: 10px 0; line-height: 1.45; }
+        .imagem-questao { display: block; max-width: 100%; max-height: 90mm; margin: 10px 0; object-fit: contain; }
+        .alternativa { display: flex; gap: 7px; margin: 7px 0; line-height: 1.4; }
+        .marcador { white-space: nowrap; }
+        .linhas-resposta { height: 72px; margin-top: 10px; background: repeating-linear-gradient(to bottom, transparent 0, transparent 23px, #9ca3af 24px); }
+        .gabarito { break-before: page; page-break-before: always; }
+        .gabarito h2 { color: #7f1d1d; border-bottom: 2px solid #991b1b; padding-bottom: 8px; }
+        .gabarito li { margin: 10px 0; }
+        @media screen {
+            body { background: #e5e7eb; padding: 20px; }
+            .folha { min-height: 297mm; background: white; box-shadow: 0 2px 12px #0002; }
+        }
+        @media print {
+            .folha { max-width: none; margin: 0; padding: 0; }
+            .instrucoes { background: white; }
+        }
+    </style>
+</head>
+<body>
+    <main class="folha">
+        <header class="cabecalho">
+            <div class="cabecalho-identidade">
+                <div class="brand-logos">${renderizarMarcasInstitucionais()}</div>
+                <div><h1>ETEC HORTOLÂNDIA</h1><p>Centro Paula Souza — Governo do Estado de São Paulo</p></div>
+            </div>
+            <div class="metadados">
+                <p><strong>Matéria:</strong> ${escaparHtml(materia)}</p>
+                <p><strong>Professor(a):</strong> ${escaparHtml(document.getElementById('professor').value)}</p>
+                <p><strong>Turma:</strong> ${escaparHtml(document.getElementById('turma').value)}</p>
+                <p><strong>Valor total:</strong> ${escaparHtml(document.getElementById('valorTotal').value)} pts</p>
+            </div>
+        </header>
+        <div class="identificacao"><div class="campo-identificacao">Aluno(a):</div><div class="campo-identificacao">Nº / RA:</div></div>
+        <div class="instrucoes"><strong>Instruções:</strong> ${escaparHtml(document.getElementById('instrucoes').value)}</div>
+        ${provaHtml}
+    </main>
+    <main class="folha gabarito">
+        <h1>Gabarito do Professor</h1>
+        <p><strong>${escaparHtml(materia)}</strong> — ${escaparHtml(document.getElementById('turma').value)}</p>
+        <ol>${gabaritoHtml}</ol>
+    </main>
+</body>
+</html>`);
+            janela.document.close();
+        }
+
+        async function gerarHtmlAluno() {
+            atualizarVisualizacaoAluno();
+            const containerHtml = document.getElementById('provaAlunoContainer').innerHTML;
+            let marcasHtml = renderizarMarcasInstitucionais();
+            try {
+                const [logoCps, logoGoverno] = await Promise.all([
+                    converterImagemParaDataUri(LOGO_CPS_URL),
+                    converterImagemParaDataUri(LOGO_GOVERNO_SP_URL)
+                ]);
+                marcasHtml = renderizarMarcasInstitucionais(logoCps, logoGoverno);
+            } catch (error) {
+                alert('Não foi possível incorporar os logos ao HTML. As imagens serão carregadas dos sites oficiais.');
+            }
+
+            const htmlCompleto = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação - Etec Hortolândia</title>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .brand-logos { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .brand-logo { width: 76px; height: 48px; padding: 4px; display: flex; align-items: center; justify-content: center; background: white; border: 1px solid #e2e8f0; border-radius: 3px; }
+        .brand-logo-governo { background: #7f1d1d; border-color: #7f1d1d; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        .brand-logo img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+        @media print { .no-print { display: none !important; } }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col font-sans text-slate-800">
+    <header class="bg-red-800 text-white shadow-md no-print">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <h1 class="text-base font-bold">ETEC HORTOLÂNDIA — Avaliação</h1>
+            <button onclick="window.print()" class="px-3 py-1.5 bg-red-900 text-xs font-semibold rounded hover:bg-red-950">Imprimir / PDF</button>
+        </div>
+    </header>
+    <main class="flex-grow max-w-4xl w-full mx-auto p-4 md:p-6">
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+            <div class="border-b-2 border-red-800 pb-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="brand-logos">${marcasHtml}</div>
+                    <div>
+                        <h2 class="text-xl font-bold text-red-900">ETEC HORTOLÂNDIA</h2>
+                        <p class="text-xs text-slate-600">Centro Paula Souza — Governo do Estado de São Paulo</p>
+                    </div>
+                </div>
+                <div class="text-right text-xs text-slate-600">
+                    <p><strong>Matéria:</strong> ${escaparHtml(document.getElementById('materia').value)}</p>
+                    <p><strong>Professor(a):</strong> ${escaparHtml(document.getElementById('professor').value)}</p>
+                    <p><strong>Turma:</strong> ${escaparHtml(document.getElementById('turma').value)}</p>
+                </div>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo</label>
+                    <input type="text" id="alunoNome" class="w-full p-2 border rounded text-sm bg-white" placeholder="Seu nome">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Número / RA</label>
+                    <input type="text" id="alunoNum" class="w-full p-2 border rounded text-sm bg-white" placeholder="Seu número">
+                </div>
+            </div>
+            <div class="mb-6 p-3 bg-red-50 border-l-4 border-red-800 text-xs text-red-900 rounded">
+                <strong>Instruções:</strong> ${escaparHtml(document.getElementById('instrucoes').value)}
+            </div>
+            <div class="space-y-6">
+                ${containerHtml}
+            </div>
+            <div class="mt-8 pt-4 border-t border-slate-200 flex justify-between items-center no-print">
+                <button onclick="alert('Prova concluída!')" class="px-6 py-2 bg-emerald-600 text-white font-semibold rounded text-sm">Enviar Prova</button>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-slate-900 text-slate-400 text-xs py-4 mt-auto text-center no-print">
+        <p>Etec Hortolândia &copy; ${new Date().getFullYear()} — Desenvolvido por Victor de Andrade Machado (TraceTech)</p>
+    </footer>
+</body>
+</html>`;
+
+            let blob = new Blob([htmlCompleto], { type: 'text/html' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'prova_aluno.html';
+            a.click();
+        }
+
+        renderizarQuestoesProf();
+    </script>
+</body>
+</html>
