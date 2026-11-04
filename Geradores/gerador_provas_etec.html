@@ -59,6 +59,7 @@
                         <button onclick="carregarRascunho()" class="px-3 py-2 bg-slate-600 hover:bg-slate-700 text-white text-xs font-semibold rounded shadow transition flex items-center gap-1">
                             <i class="fa-solid fa-folder-open"></i> Carregar Rascunho
                         </button>
+                        <input type="file" id="arquivoRascunho" accept=".csv,text/csv" class="hidden" onchange="carregarRascunho(event)">
                         <button onclick="exportarProvaPdf()" class="px-3 py-2 bg-red-700 hover:bg-red-800 text-white text-xs font-semibold rounded shadow transition flex items-center gap-1">
                             <i class="fa-solid fa-file-pdf"></i> Exportar Prova / PDF
                         </button>
@@ -353,6 +354,84 @@
             questoes[qIndex].correta = optIndex;
         }
 
+        const COLUNAS_RASCUNHO = ['materia', 'professor', 'turma', 'valorTotal', 'instrucoes', 'questoes'];
+
+        function escaparCampoCsv(valor) {
+            return `"${String(valor).replace(/"/g, '""')}"`;
+        }
+
+        function analisarCsv(texto) {
+            const registros = [];
+            let registro = [];
+            let campo = '';
+            let dentroDeAspas = false;
+
+            for (let i = 0; i < texto.length; i++) {
+                const caractere = texto[i];
+
+                if (dentroDeAspas) {
+                    if (caractere === '"' && texto[i + 1] === '"') {
+                        campo += '"';
+                        i++;
+                    } else if (caractere === '"') {
+                        dentroDeAspas = false;
+                    } else {
+                        campo += caractere;
+                    }
+                } else if (caractere === '"') {
+                    if (campo.length > 0) {
+                        throw new Error('O arquivo CSV contém aspas em uma posição inválida.');
+                    }
+                    dentroDeAspas = true;
+                } else if (caractere === ',') {
+                    registro.push(campo);
+                    campo = '';
+                } else if (caractere === '\r' || caractere === '\n') {
+                    registro.push(campo);
+                    registros.push(registro);
+                    registro = [];
+                    campo = '';
+                    if (caractere === '\r' && texto[i + 1] === '\n') {
+                        i++;
+                    }
+                } else {
+                    campo += caractere;
+                }
+            }
+
+            if (dentroDeAspas) {
+                throw new Error('O arquivo CSV contém um campo com aspas não fechadas.');
+            }
+            if (campo.length > 0 || registro.length > 0) {
+                registro.push(campo);
+                registros.push(registro);
+            }
+            return registros;
+        }
+
+        function nomeArquivoRascunho() {
+            const palavrasMateria = document.getElementById('materia').value.match(/[\p{L}0-9]+/gu) || [];
+            const siglaMateria = palavrasMateria
+                .filter(palavra => !['de', 'da', 'do', 'das', 'dos', 'e'].includes(
+                    palavra.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+                ))
+                .map(palavra => {
+                    const palavraSemAcentos = palavra.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    return palavra.length > 1 && palavra === palavra.toUpperCase()
+                        ? palavraSemAcentos
+                        : palavraSemAcentos[0];
+                })
+                .join('')
+                .toLowerCase() || 'materia';
+            const nome = document.getElementById('professor').value
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '_')
+                .replace(/^_+|_+$/g, '') || 'nome';
+            return `rascunho_${siglaMateria}_${nome}.csv`;
+        }
+
         function salvarRascunho() {
             const dados = {
                 materia: document.getElementById('materia').value,
@@ -362,25 +441,67 @@
                 instrucoes: document.getElementById('instrucoes').value,
                 questoes: questoes
             };
-            localStorage.setItem('etec_rascunho_prova', JSON.stringify(dados));
-            alert('Rascunho salvo com sucesso!');
+
+            const csv = `\uFEFF${COLUNAS_RASCUNHO.join(',')}\r\n${COLUNAS_RASCUNHO
+                .map(coluna => escaparCampoCsv(coluna === 'questoes' ? JSON.stringify(dados[coluna]) : dados[coluna]))
+                .join(',')}\r\n`;
+            const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = nomeArquivoRascunho();
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            alert('Rascunho CSV salvo com sucesso!');
         }
 
-        function carregarRascunho() {
-            const salvo = localStorage.getItem('etec_rascunho_prova');
-            if (!salvo) {
-                alert('Nenhum rascunho encontrado.');
+        async function carregarRascunho(event) {
+            const seletorArquivo = document.getElementById('arquivoRascunho');
+            if (!event) {
+                seletorArquivo.click();
                 return;
             }
-            const dados = JSON.parse(salvo);
-            document.getElementById('materia').value = dados.materia || '';
-            document.getElementById('professor').value = dados.professor || '';
-            document.getElementById('turma').value = dados.turma || '';
-            document.getElementById('valorTotal').value = dados.valorTotal || '';
-            document.getElementById('instrucoes').value = dados.instrucoes || '';
-            questoes = dados.questoes || [];
-            renderizarQuestoesProf();
-            alert('Rascunho carregado com sucesso!');
+
+            const arquivo = event.target.files[0];
+            if (!arquivo) {
+                return;
+            }
+
+            try {
+                const registros = analisarCsv((await arquivo.text()).replace(/^\uFEFF/, ''))
+                    .filter(registro => registro.some(campo => campo.trim() !== ''));
+                if (registros.length !== 2 || registros[0].join(',') !== COLUNAS_RASCUNHO.join(',')) {
+                    throw new Error('O CSV não corresponde ao formato de rascunho esperado.');
+                }
+
+                const valores = registros[1];
+                if (valores.length !== COLUNAS_RASCUNHO.length) {
+                    throw new Error('O CSV não contém todos os dados do rascunho.');
+                }
+                const dados = Object.fromEntries(COLUNAS_RASCUNHO.map((coluna, index) => [coluna, valores[index]]));
+                dados.questoes = JSON.parse(dados.questoes);
+                if (!Array.isArray(dados.questoes) || dados.questoes.some(questao =>
+                    !questao || typeof questao !== 'object' ||
+                    !['multipla', 'discursiva', 'vf'].includes(questao.tipo) ||
+                    !Array.isArray(questao.opcoes) ||
+                    typeof questao.enunciado !== 'string' ||
+                    typeof questao.imagem !== 'string'
+                )) {
+                    throw new Error('A lista de questões do CSV é inválida.');
+                }
+
+                document.getElementById('materia').value = dados.materia;
+                document.getElementById('professor').value = dados.professor;
+                document.getElementById('turma').value = dados.turma;
+                document.getElementById('valorTotal').value = dados.valorTotal;
+                document.getElementById('instrucoes').value = dados.instrucoes;
+                questoes = dados.questoes;
+                renderizarQuestoesProf();
+                alert('Rascunho carregado com sucesso!');
+            } catch (error) {
+                alert(`Não foi possível carregar o rascunho: ${error.message}`);
+            } finally {
+                seletorArquivo.value = '';
+            }
         }
 
         function atualizarVisualizacaoAluno() {

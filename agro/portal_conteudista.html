@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Conteudista - Submissão de Cursos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Smooth Transitions & Scrollbars */
+        html { scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Drag & Drop Highlight */
+        .drag-over {
+            border-color: #16a34a !important;
+            background-color: #f0fdf4 !important;
+        }
+
+        /* Accordion Smooth Height Animation */
+        .accordion-content {
+            transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+            max-height: 0;
+            overflow: hidden;
+        }
+        .accordion-content.active {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header / Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-lg sm:text-xl leading-tight">Portal do Conteudista</h1>
+                    <p class="text-xs text-slate-500">Plataforma de Submissão & Autoria Guiada</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <a href="#guia-submissao" class="hidden md:inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors px-3 py-2">
+                    <i class="fa-regular fa-compass"></i> Guia do Autor
+                </a>
+                <a href="#download-modelos" class="hidden sm:inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors px-3 py-2">
+                    <i class="fa-solid fa-download"></i> Modelos
+                </a>
+                <a href="#formulario-submissao" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all">
+                    <i class="fa-solid fa-paper-plane"></i> Submeter Curso
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- Hero Banner -->
+        <section class="bg-gradient-to-br from-slate-900 via-slate-800 to-brand-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                <i class="fa-solid fa-book-open text-[300px]"></i>
+            </div>
+            <div class="relative z-10 max-w-3xl space-y-4">
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-brand-500/20 text-brand-300 border border-brand-500/30">
+                    <i class="fa-solid fa-seedling"></i> Agronegócio & Sistemas
+                </span>
+                <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                    Submeta seu Curso com Qualidade e Padronização
+                </h2>
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                    Siga o passo a passo guiado abaixo. Consulte as orientações em cada seção retrátil, baixe o modelo editável (`.docx`) e envie o conteúdo organizado por módulos e capítulos.
+                </p>
+                <div class="pt-2 flex flex-wrap gap-4">
+                    <a href="#guia-submissao" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 text-sm font-medium px-5 py-2.5 rounded-xl transition-all inline-flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info"></i> Entenda as Diretrizes
+                    </a>
+                    <a href="#download-modelos" class="bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all inline-flex items-center gap-2 shadow-lg shadow-brand-500/30">
+                        <i class="fa-solid fa-file-word"></i> Baixar Template (.DOCX)
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 1: GUIA E COMPONENTES EXPANSÍVEIS (ACCORDIONS) -->
+        <section id="guia-submissao" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4 flex items-end justify-between">
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-brand-600"></i> Guia da Estrutura do Curso
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-1">Clique nos blocos abaixo para expandir e entender o que é exigido em cada parte antes de submeter.</p>
+                </div>
+                <button id="btn-toggle-all-accordions" onclick="toggleAllAccordions()" class="text-xs font-semibold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg border border-brand-200 transition-colors">
+                    Expandir Todos
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <!-- Accordion Item 1 -->
+                <div class="border border-slate-200 bg-white rounded-2xl shadow-sm overflow-hidden transition-all hover:border-slate-300">
+                    <button onclick="toggleAccordion('acc-1')" class="w-full px-6 py-4 text-left flex items-center justify-between bg-white hover:bg-slate-50/80 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">1</span>
+                            <div>
+                                <h4 class="font-semibold text-slate-900 text-base">Estrutura de Módulos e Capítulos</h4>
+                                <p class="text-xs text-slate-500">Regras de volume, carga horária e divisão temática</p>
+                            </div>
+                        </div>
+                        <i id="icon-acc-1" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div id="acc-1" class="accordion-content">
+                        <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/50 space-y-4 text-sm text-slate-600">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                    <span class="font-bold text-slate-900 block mb-1">Volume Obrigatório</span>
+                                    <p class="text-xs">Cada curso deve conter de <strong>3 a 4 Módulos</strong> temáticos bem definidos.</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                    <span class="font-bold text-slate-900 block mb-1">Capítulos por Módulo</span>
+                                    <p class="text-xs">Cada módulo deve conter <strong>exatamente 2 Capítulos</strong> autônomos de aprendizagem.</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                    <span class="font-bold text-slate-900 block mb-1">Carga Horária</span>
+                                    <p class="text-xs">Estimativa média total de <strong>10h a 20h</strong> de dedicação do estudante.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accordion Item 2 -->
+                <div class="border border-slate-200 bg-white rounded-2xl shadow-sm overflow-hidden transition-all hover:border-slate-300">
+                    <button onclick="toggleAccordion('acc-2')" class="w-full px-6 py-4 text-left flex items-center justify-between bg-white hover:bg-slate-50/80 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">2</span>
+                            <div>
+                                <h4 class="font-semibold text-slate-900 text-base">Conteúdo Teórico & Elementos de Destaque (Callouts)</h4>
+                                <p class="text-xs text-slate-500">Mínimo de 2 elementos visuais por capítulo (Tome Nota, Saiba Mais, Atenção, Dica Prática)</p>
+                            </div>
+                        </div>
+                        <i id="icon-acc-2" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div id="acc-2" class="accordion-content">
+                        <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/50 space-y-4 text-sm text-slate-600">
+                            <p>O texto teórico deve conter conceitos práticos e fundamentados. Para enriquecer a leitura, é obrigatório incluir no mínimo 2 caixas de destaque por capítulo entre as categorias:</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs">
+                                    <strong class="text-blue-800 block mb-1"><i class="fa-solid fa-note-sticky"></i> TOME NOTA</strong>
+                                    Conceito vital ou regra indispensável que o estudante deve fixar.
+                                </div>
+                                <div class="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs">
+                                    <strong class="text-purple-800 block mb-1"><i class="fa-solid fa-lightbulb"></i> SAIBA MAIS</strong>
+                                    Aprofundamento histórico, leitura complementar ou curiosidade técnica.
+                                </div>
+                                <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs">
+                                    <strong class="text-amber-800 block mb-1"><i class="fa-solid fa-triangle-exclamation"></i> ATENÇÃO</strong>
+                                    Alerta sobre erros comuns de mercado, gargalos operacionais ou riscos.
+                                </div>
+                                <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs">
+                                    <strong class="text-emerald-800 block mb-1"><i class="fa-solid fa-rocket"></i> DICA PRÁTICA</strong>
+                                    Dica rápida de aplicação em campo ou otimização de código/sistema.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accordion Item 3 -->
+                <div class="border border-slate-200 bg-white rounded-2xl shadow-sm overflow-hidden transition-all hover:border-slate-300">
+                    <button onclick="toggleAccordion('acc-3')" class="w-full px-6 py-4 text-left flex items-center justify-between bg-white hover:bg-slate-50/80 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm">3</span>
+                            <div>
+                                <h4 class="font-semibold text-slate-900 text-base">Banco de Questões Objetivas (10 Questões por Capítulo)</h4>
+                                <p class="text-xs text-slate-500">4 Fáceis, 4 Médias e 2 Difíceis com variabilidade de formatos</p>
+                            </div>
+                        </div>
+                        <i id="icon-acc-3" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div id="acc-3" class="accordion-content">
+                        <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/50 space-y-4 text-sm text-slate-600">
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 space-y-3">
+                                <h5 class="font-bold text-slate-900">Regras do Banco de Questões por Capítulo:</h5>
+                                <ul class="list-disc list-inside space-y-1.5 text-xs text-slate-600">
+                                    <li><strong>Total:</strong> Exatamente 10 questões objetivas todas com gabarito comentado.</li>
+                                    <li><strong>Distribuição de Dificuldade:</strong> 4 Questões Fáceis, 4 Médias e 2 Difíceis.</li>
+                                    <li><strong>Estilos de Questão (Mínimo 3 variações):</strong>
+                                        <ol class="list-decimal list-inside pl-4 mt-1 space-y-1 text-slate-500">
+                                            <li>Tradicional (1 alternativa correta entre 5).</li>
+                                            <li>Verdadeiro ou Falso nas Alternativas.</li>
+                                            <li>Análise de Assertivas (I, II, III e IV).</li>
+                                            <li>Asserção e Razão (Proposição I PORQUE Proposição II).</li>
+                                        </ol>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accordion Item 4 -->
+                <div class="border border-slate-200 bg-white rounded-2xl shadow-sm overflow-hidden transition-all hover:border-slate-300">
+                    <button onclick="toggleAccordion('acc-4')" class="w-full px-6 py-4 text-left flex items-center justify-between bg-white hover:bg-slate-50/80 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm">4</span>
+                            <div>
+                                <h4 class="font-semibold text-slate-900 text-base">Videoaulas, Imagens e Mídia</h4>
+                                <p class="text-xs text-slate-500">Instruções para roteiros de 5 a 10 min, resolução 1080p e padrões visuais</p>
+                            </div>
+                        </div>
+                        <i id="icon-acc-4" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div id="acc-4" class="accordion-content">
+                        <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/50 space-y-3 text-sm text-slate-600">
+                            <ul class="list-disc list-inside space-y-2 text-xs">
+                                <li><strong>Videoaula:</strong> Gravação em alta definição (1080p), áudio limpo, com duração de 5 a 10 minutos por capítulo, acompanhada do roteiro em tabela.</li>
+                                <li><strong>Imagens:</strong> Devem possuir legenda explicativa, fonte indicada e texto alternativo (alt text) para acessibilidade.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 2: DOWNLOAD DE MODELOS E ARQUIVOS -->
+        <section id="download-modelos" class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-brand-400">Recursos de Apoio</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-white">Baixar Modelos de Submissão (.DOCX)</h3>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-1">Utilize os templates oficiais para preencher seu curso exatamente nas normas exigidas.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="copyTemplateMarkdown()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+                        <i class="fa-regular fa-copy"></i> Copiar Código do Template
+                    </button>
+                    <button onclick="downloadDocxTemplate()" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-brand-500/20">
+                        <i class="fa-solid fa-file-arrow-down"></i> Download Modelo (.DOCX)
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-5 flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center shrink-0 text-xl">
+                        <i class="fa-solid fa-file-word"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-semibold text-white text-sm">Modelo Oficial de Submissão do Conteudista</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">Contém os campos cadastrais do curso, espaços para as caixas de destaque, tabela de roteiro de vídeo e o banco de 10 questões objetivas prontas.</p>
+                        <a href="javascript:void(0)" onclick="downloadDocxTemplate()" class="text-xs text-brand-400 hover:text-brand-300 font-medium inline-block pt-1">Baixar arquivo .docx &rarr;</a>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/60 border border-slate-700/80 rounded-2xl p-5 flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 flex items-center justify-center shrink-0 text-xl">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-semibold text-white text-sm">Manual de Diretrizes Pedagógicas</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">Guia técnico completo com verbos da Taxonomia de Bloom, instruções de gravação e padronização visual.</p>
+                        <a href="javascript:void(0)" onclick="openGuidelinesModal()" class="text-xs text-purple-400 hover:text-purple-300 font-medium inline-block pt-1">Visualizar online &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: FORMULÁRIO ONLINE DE CADASTRO E SUBMISSÃO -->
+        <section id="formulario-submissao" class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-lg space-y-10">
+            <div class="border-b border-slate-200 pb-6">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900">Formulário de Submissão do Curso</h3>
+                        <p class="text-xs sm:text-sm text-slate-500">Preencha as informações do curso, os dados do autor, anexe os documentos cadastrais em PDF e envie os arquivos do conteúdo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="course-submission-form" onsubmit="handleFormSubmission(event)" class="space-y-10">
+                
+                <!-- BLOCO 1: DADOS DO CURSO -->
+                <div class="space-y-6">
+                    <h4 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-l-4 border-brand-600 pl-3">
+                        1. Dados Gerais do Curso
+                    </h4>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Nome Completo do Curso *</label>
+                            <input type="text" required placeholder="Ex: Gestão da Irrigação de Precisão no Agronegócio" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Área do Conhecimento *</label>
+                            <select required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none bg-white">
+                                <option value="">Selecione a área...</option>
+                                <option value="agronegocio">Agronegócio</option>
+                                <option value="sistemas">Sistemas / Tecnologia da Informação</option>
+                                <option value="hibrido">Agronegócio & Sistemas (Integrado)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Nível de Proficiência *</label>
+                            <select required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none bg-white">
+                                <option value="">Selecione o nível...</option>
+                                <option value="basico">Básico / Iniciante</option>
+                                <option value="intermediario">Intermediário</option>
+                                <option value="avancado">Avançado</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Carga Horária Total (Horas) *</label>
+                            <input type="number" required min="5" max="100" placeholder="Ex: 20" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Adicionar Módulo 4? *</label>
+                            <select id="select-num-modulos" onchange="updateModuleUploadsSection()" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none bg-white">
+                                <option value="3">Não — apenas 3 módulos</option>
+                                <option value="4">Sim — adicionar Módulo 4</option>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Resumo / Ementa do Curso *</label>
+                            <textarea required rows="4" placeholder="Descreva sucintamente o objetivo e o valor prático do curso para o aluno (100 a 200 palavras)..." class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none resize-y"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOCO 2: DADOS DO AUTOR / CONTEUDISTA -->
+                <div class="space-y-6 pt-6 border-t border-slate-200">
+                    <h4 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-l-4 border-brand-600 pl-3">
+                        2. Identificação do Conteudista / Autor
+                    </h4>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Nome Completo *</label>
+                            <input type="text" required placeholder="Seu nome completo" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">CPF ou CNPJ *</label>
+                            <input type="text" required placeholder="000.000.000-00" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">E-mail de Contato *</label>
+                            <input type="email" required placeholder="seu.email@exemplo.com" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Telefone / WhatsApp *</label>
+                            <input type="tel" required placeholder="(00) 00000-0000" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mini Biografia / Perfil Profissional *</label>
+                            <textarea required rows="3" placeholder="Resumo de 3 a 5 linhas da sua formação, experiência acadêmica e atuação de mercado..." class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none resize-y"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOCO 3: UPLOAD DE DOCUMENTOS CADASTRAIS DO AUTOR (PDF) -->
+                <div class="space-y-6 pt-6 border-t border-slate-200">
+                    <div>
+                        <h4 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-l-4 border-brand-600 pl-3">
+                            3. Documentação Cadastral do Autor (PDF)
+                        </h4>
+                        <p class="text-xs text-slate-500 mt-1 pl-4">Anexe os 4 documentos comprobatórios obrigatórios exclusivamente no formato PDF.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Doc PDF 1 -->
+                        <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-id-card text-brand-600"></i> RG/CPF ou CNH *
+                                </span>
+                                <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono">PDF</span>
+                            </div>
+                            <input type="file" required accept=".pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
+                        </div>
+
+                        <!-- Doc PDF 2 -->
+                        <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-file-invoice text-brand-600"></i> Currículo Atualizado (PDF) *
+                                </span>
+                                <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono">PDF</span>
+                            </div>
+                            <input type="file" required accept=".pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
+                        </div>
+
+                        <!-- Doc PDF 3 -->
+                        <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-graduation-cap text-brand-600"></i> Comprovante de Titulação *
+                                </span>
+                                <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono">PDF</span>
+                            </div>
+                            <input type="file" required accept=".pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
+                        </div>
+
+                        <!-- Doc PDF 4 -->
+                        <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-file-signature text-brand-600"></i> Termo de Direitos Autorais *
+                                </span>
+                                <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono">PDF</span>
+                            </div>
+                            <input type="file" required accept=".pdf" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOCO 4: ENVIOS DE ARQUIVOS DO CONTEÚDO (POR MÓDULO/CAPÍTULO) -->
+                <div class="space-y-6 pt-6 border-t border-slate-200">
+                    <div>
+                        <h4 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-l-4 border-brand-600 pl-3">
+                            4. Submissão dos Arquivos do Curso
+                        </h4>
+                        <p class="text-xs text-slate-500 mt-1 pl-4">
+                            Anexe os arquivos de cada módulo/capítulo (documentos preenchidos `.docx`, `.pdf`, apresentações, imagens ou gravações de vídeo em `.mp4` / `.zip`).
+                        </p>
+                    </div>
+
+                    <!-- Container Dinâmico dos Módulos de Upload -->
+                    <div id="modules-upload-container" class="space-y-6">
+                        <!-- Gerado Dinamicamente via JS -->
+                    </div>
+                </div>
+
+                <!-- Termos e Submissão Final -->
+                <div class="pt-6 border-t border-slate-200 space-y-6">
+                    <div class="flex items-start gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <input id="terms-check" type="checkbox" required class="mt-1 w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500">
+                        <label for="terms-check" class="text-xs text-slate-600 leading-relaxed cursor-pointer">
+                            Declaro que as informações prestadas são verdadeiras, que o conteúdo submetido é de minha autoria original e que concordo com as diretrizes pedagógicas e editoriais da instituição.
+                        </label>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-end gap-4">
+                        <button type="reset" class="w-full sm:w-auto px-6 py-3 rounded-xl border border-slate-300 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition-all">
+                            Limpar Formulário
+                        </button>
+                        <button type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-lg shadow-brand-600/30 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Finalizar & Enviar Curso
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-slate-300 font-semibold">
+                <i class="fa-solid fa-graduation-cap text-brand-500"></i> Portal do Conteudista
+            </div>
+            <p>&copy; 2026 Plataforma Educacional Digital. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- Modal para Visualização de Diretrizes -->
+    <div id="guidelines-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+                <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-brand-600"></i> Diretrizes Rápidas
+                </h3>
+                <button onclick="closeGuidelinesModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4 text-sm text-slate-600">
+                <p><strong>Visão Geral:</strong> Seu curso deve conter entre 3 e 4 módulos, com 2 capítulos por módulo.</p>
+                <p><strong>Questões:</strong> Cada capítulo requer 10 questões objetivas (4 fáceis, 4 médias, 2 difíceis) e diversidade de formatos.</p>
+                <p><strong>Videoaulas:</strong> Gravações curtas (5-10 minutos) em Full HD com roteiro prévio estruturado.</p>
+            </div>
+            <div class="p-4 border-t border-slate-200 bg-slate-50 text-right">
+                <button onclick="closeGuidelinesModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs rounded-xl">Entendi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Store user files per dropzone
+        const fileStore = {};
+
+        // On Page Load Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            updateModuleUploadsSection();
+        });
+
+        // Toggle Single Accordion
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('active');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Toggle All Accordions
+        let allExpanded = false;
+        function toggleAllAccordions() {
+            allExpanded = !allExpanded;
+            const btn = document.getElementById('btn-toggle-all-accordions');
+            btn.innerText = allExpanded ? 'Recolher Todos' : 'Expandir Todos';
+
+            for (let i = 1; i <= 4; i++) {
+                const content = document.getElementById(`acc-${i}`);
+                const icon = document.getElementById(`icon-acc-${i}`);
+                if (content) {
+                    if (allExpanded) {
+                        content.classList.add('active');
+                        if (icon) icon.style.transform = 'rotate(180deg)';
+                    } else {
+                        content.classList.remove('active');
+                        if (icon) icon.style.transform = 'rotate(0deg)';
+                    }
+                }
+            }
+        }
+
+        // Render Dynamic Module Upload Cards
+        function updateModuleUploadsSection() {
+            const container = document.getElementById('modules-upload-container');
+            const count = parseInt(document.getElementById('select-num-modulos').value) || 3;
+            
+            container.innerHTML = '';
+
+            if (count < 4) {
+                Object.keys(fileStore).forEach(k => {
+                    if (k.startsWith('dropzone-m4-')) delete fileStore[k];
+                });
+            }
+
+            for (let m = 1; m <= count; m++) {
+                const moduleCard = document.createElement('div');
+                moduleCard.className = 'border border-slate-200 rounded-2xl bg-white p-5 space-y-4 shadow-sm';
+                
+                let chaptersHTML = '';
+                for (let c = 1; c <= 2; c++) {
+                    const dropzoneId = `dropzone-m${m}-c${c}`;
+                    fileStore[dropzoneId] = fileStore[dropzoneId] || [];
+
+                    chaptersHTML += `
+                        <div class="border border-slate-100 bg-slate-50/70 rounded-xl p-4 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-800">
+                                    <i class="fa-solid fa-folder-open text-brand-600"></i> Módulo ${m} — Capítulo ${c}
+                                </span>
+                                <span class="text-[10px] text-slate-500">Aceita: .docx, .pdf, .zip, .mp4</span>
+                            </div>
+
+                            <!-- Dropzone Area -->
+                            <div id="${dropzoneId}" 
+                                 ondragover="handleDragOver(event, '${dropzoneId}')" 
+                                 ondragleave="handleDragLeave(event, '${dropzoneId}')" 
+                                 ondrop="handleDrop(event, '${dropzoneId}')"
+                                 onclick="triggerFileInput('${dropzoneId}-input')"
+                                 class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center bg-white cursor-pointer hover:border-brand-500 transition-all">
+                                
+                                <input type="file" id="${dropzoneId}-input" multiple class="hidden" onchange="handleFileSelect(event, '${dropzoneId}')">
+                                
+                                <div class="space-y-1">
+                                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-slate-400"></i>
+                                    <p class="text-xs font-semibold text-slate-700">Clique para selecionar ou arraste os arquivos aqui</p>
+                                    <p class="text-[10px] text-slate-400">Texto do Capítulo, Roteiro, Imagens ou Exercícios</p>
+                                </div>
+                            </div>
+
+                            <!-- File List Container -->
+                            <div id="${dropzoneId}-file-list" class="space-y-1.5"></div>
+                        </div>
+                    `;
+                }
+
+                moduleCard.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <h5 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-md bg-brand-600 text-white flex items-center justify-center text-xs font-bold">${m}</span>
+                            Módulo ${m}
+                        </h5>
+                        <span class="text-xs text-slate-500">2 Capítulos Obrigatórios</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${chaptersHTML}
+                    </div>
+                `;
+
+                container.appendChild(moduleCard);
+                for (let c = 1; c <= 2; c++) renderFileList(`dropzone-m${m}-c${c}`);
+            }
+        }
+
+        // Trigger Hidden File Input
+        function triggerFileInput(inputId) {
+            document.getElementById(inputId).click();
+        }
+
+        // Drag & Drop Handlers
+        function handleDragOver(e, dropzoneId) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById(dropzoneId).classList.add('drag-over');
+        }
+
+        function handleDragLeave(e, dropzoneId) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById(dropzoneId).classList.remove('drag-over');
+        }
+
+        function handleDrop(e, dropzoneId) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById(dropzoneId).classList.remove('drag-over');
+
+            const files = Array.from(e.dataTransfer.files);
+            addFilesToStore(dropzoneId, files);
+        }
+
+        function handleFileSelect(e, dropzoneId) {
+            const files = Array.from(e.target.files);
+            addFilesToStore(dropzoneId, files);
+        }
+
+        function addFilesToStore(dropzoneId, files) {
+            fileStore[dropzoneId] = fileStore[dropzoneId] || [];
+            fileStore[dropzoneId].push(...files);
+            renderFileList(dropzoneId);
+            showToast(`${files.length} arquivo(s) adicionado(s) com sucesso!`, 'success');
+        }
+
+        function removeFile(dropzoneId, index) {
+            if (fileStore[dropzoneId]) {
+                fileStore[dropzoneId].splice(index, 1);
+                renderFileList(dropzoneId);
+                showToast('Arquivo removido.', 'info');
+            }
+        }
+
+        function renderFileList(dropzoneId) {
+            const listContainer = document.getElementById(`${dropzoneId}-file-list`);
+            const files = fileStore[dropzoneId] || [];
+
+            if (files.length === 0) {
+                listContainer.innerHTML = '';
+                return;
+            }
+
+            listContainer.innerHTML = files.map((file, idx) => `
+                <div class="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200 text-xs">
+                    <div class="flex items-center gap-2 truncate max-w-[80%]">
+                        <i class="fa-solid fa-file text-brand-600"></i>
+                        <span class="truncate font-medium text-slate-700">${file.name}</span>
+                        <span class="text-[10px] text-slate-400">(${(file.size / (1024 * 1024)).toFixed(2)} MB)</span>
+                    </div>
+                    <button type="button" onclick="removeFile('${dropzoneId}', ${idx})" class="text-rose-500 hover:text-rose-700 px-1.5 py-0.5 rounded hover:bg-rose-50 transition-colors">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Modals Controls
+        function openGuidelinesModal() {
+            document.getElementById('guidelines-modal').classList.remove('hidden');
+        }
+
+        function closeGuidelinesModal() {
+            document.getElementById('guidelines-modal').classList.add('hidden');
+        }
+
+        // Action Handlers
+        function downloadDocxTemplate() {
+            const a = document.createElement('a');
+            a.href = 'modelo_submissao_conteudista.docx';
+            a.download = 'modelo_submissao_conteudista.docx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            showToast('Download do modelo .DOCX iniciado!', 'success');
+        }
+
+        function copyTemplateMarkdown() {
+            const textToCopy = `# FORMULÁRIO DE CADASTRO E SUBMISSÃO DE CURSO\n1. DADOS DE CADASTRO DO CURSO...`;
+            
+            // Clipboard Fallback
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Modelo copiado para a área de transferência!', 'success');
+            } catch (err) {
+                showToast('Erro ao copiar modelo.', 'error');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Form Submit Handler
+        function handleFormSubmission(event) {
+            event.preventDefault();
+            
+            // Validate if at least one module file was uploaded
+            let totalFiles = 0;
+            Object.values(fileStore).forEach(arr => totalFiles += arr.length);
+
+            if (totalFiles === 0) {
+                showToast('Por favor, anexe ao menos um arquivo de conteúdo nos módulos.', 'warning');
+                return;
+            }
+
+            showToast('Enviando arquivos e cadastrando curso...', 'info');
+
+            setTimeout(() => {
+                showToast('Curso e documentos submetidos com sucesso!', 'success');
+                document.getElementById('course-submission-form').reset();
+                Object.keys(fileStore).forEach(k => fileStore[k] = []);
+                updateModuleUploadsSection();
+            }, 2000);
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgClass = 'bg-slate-900 text-white';
+            let iconClass = 'fa-circle-info text-blue-400';
+
+            if (type === 'success') {
+                bgClass = 'bg-emerald-900 text-emerald-100 border border-emerald-700';
+                iconClass = 'fa-circle-check text-emerald-400';
+            } else if (type === 'warning') {
+                bgClass = 'bg-amber-900 text-amber-100 border border-amber-700';
+                iconClass = 'fa-triangle-exclamation text-amber-400';
+            } else if (type === 'error') {
+                bgClass = 'bg-rose-900 text-rose-100 border border-rose-700';
+                iconClass = 'fa-circle-xmark text-rose-400';
+            }
+
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl text-xs font-medium transition-all duration-300 transform translate-y-2 opacity-0 ${bgClass}`;
+            toast.innerHTML = `<i class="fa-solid ${iconClass} text-base"></i> <span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
