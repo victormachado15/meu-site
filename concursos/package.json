@@ -1,0 +1,15 @@
+{
+  "name": "meus-concursos",
+  "private": true,
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=20.16"
+  },
+  "scripts": {
+    "start": "node servidor.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "cheerio": "1.0.0"
+  }
+}

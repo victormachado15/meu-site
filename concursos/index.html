@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Controle de Concursos</title>
+    <meta name="concursos-api" content="">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-indigo-600 text-white shadow-md py-6 px-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap"></i> Meus Concursos 2026/2027
+                </h1>
+                <p class="text-indigo-200 text-sm">Acompanhe suas oportunidades, editais e datas de provas em um só lugar.</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="document.getElementById('form-cadastro').scrollIntoView({behavior: 'smooth'})" class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-semibold text-sm shadow hover:bg-indigo-50 transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Novo Concurso
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full space-y-8">
+
+        <!-- Cards de Resumo -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                <div class="bg-indigo-100 text-indigo-600 p-3 rounded-lg text-xl"><i class="fa-solid fa-list-check"></i></div>
+                <div>
+                    <p class="text-xs text-slate-500 font-medium uppercase">Total Cadastrados</p>
+                    <h3 id="stat-total" class="text-2xl font-bold text-slate-700">0</h3>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                <div class="bg-amber-100 text-amber-600 p-3 rounded-lg text-xl"><i class="fa-solid fa-calendar-days"></i></div>
+                <div>
+                    <p class="text-xs text-slate-500 font-medium uppercase">Próximas Provas</p>
+                    <h3 id="stat-provas" class="text-2xl font-bold text-slate-700">0</h3>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                <div class="bg-emerald-100 text-emerald-600 p-3 rounded-lg text-xl"><i class="fa-solid fa-circle-check"></i></div>
+                <div>
+                    <p class="text-xs text-slate-500 font-medium uppercase">Acompanhamento Ativo</p>
+                    <h3 class="text-2xl font-bold text-emerald-600">Online</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Cadastro Interativo -->
+        <div id="form-cadastro" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-indigo-600"></i> Cadastrar Novo Concurso
+            </h2>
+            
+            <div class="mb-5 bg-indigo-50 border border-indigo-100 p-4 rounded-lg">
+                <label for="busca-concurso" class="block text-xs font-semibold text-indigo-900 mb-1">Pesquise por nome ou link de notícia da PCI Concursos</label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="search" id="busca-concurso" maxlength="255" placeholder="Ex: CETESB ou link da notícia na PCI" class="flex-grow min-w-0 border border-indigo-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                    <button type="button" id="botao-busca" onclick="pesquisarConcursos()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-magnifying-glass"></i> Pesquisar
+                    </button>
+                </div>
+                <p class="text-xs text-indigo-700 mt-2">A busca por nome mostra até 8 concursos com inscrições abertas ou prestes a abrir. Confira os dados no edital; campos não identificados ficam em branco.</p>
+                <p id="status-busca" role="status" aria-live="polite" class="text-sm text-indigo-900 mt-2"></p>
+                <div id="resultados-busca" class="space-y-3 mt-3"></div>
+            </div>
+
+            <form id="concurso-form" onsubmit="adicionarConcurso(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Órgão / Concurso *</label>
+                    <input type="text" id="nome" required placeholder="Ex: TJ-SP, INSS..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Banca Organizadora</label>
+                    <input type="text" id="banca" placeholder="Ex: Vunesp, FGV, FCC..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Data Prevista da Prova</label>
+                    <input type="date" id="dataProva" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Link do Concurso ou Fonte</label>
+                    <input type="url" id="link" placeholder="https://..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label for="inicioInscricao" class="block text-xs font-semibold text-slate-600 mb-1">Início das Inscrições</label>
+                    <input type="date" id="inicioInscricao" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label for="fimInscricao" class="block text-xs font-semibold text-slate-600 mb-1">Fim das Inscrições</label>
+                    <input type="date" id="fimInscricao" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="situacaoManual" class="block text-xs font-semibold text-slate-600 mb-1">Situação</label>
+                    <select id="situacaoManual" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        <option value="">Automática pelas datas</option>
+                        <option value="aguardando-edital">Aguardando edital</option>
+                        <option value="inscricoes-proximas">Inscrições próximas</option>
+                        <option value="inscricoes-abertas">Inscrições abertas</option>
+                        <option value="inscricoes-encerradas">Inscrições encerradas</option>
+                        <option value="prova-realizada">Prova realizada</option>
+                    </select>
+                    <p class="text-xs text-slate-500 mt-1">A situação manual não muda automaticamente.</p>
+                </div>
+                <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-2 mt-2">
+                    <button type="reset" class="px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-600 hover:bg-slate-100 transition">Limpar</button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition shadow-sm">Salvar Concurso</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Lista de Concursos -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-list text-indigo-600"></i> Concursos Acompanhados (Ordenados por Data)
+                </h2>
+                <button onclick="restaurarPadroes()" class="text-xs text-indigo-600 hover:underline font-medium">Restaurar Lista Padrão</button>
+            </div>
+            <p class="px-6 pt-4 text-xs text-slate-500">Clique na situação para alterar as datas ou informá-la manualmente. A situação automática usa as datas previstas; confirme no edital.</p>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 text-xs uppercase tracking-wider">
+                            <th class="p-4 font-semibold">Concurso / Órgão</th>
+                            <th class="p-4 font-semibold">Banca</th>
+                            <th class="p-4 font-semibold">Data da Prova</th>
+                            <th class="p-4 font-semibold">Situação</th>
+                            <th class="p-4 font-semibold">Link / Fonte</th>
+                            <th class="p-4 font-semibold text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-concursos" class="divide-y divide-slate-200 text-sm">
+                        <!-- Conteúdo injetado via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="empty-state" class="hidden p-8 text-center text-slate-400">
+                <i class="fa-regular fa-folder-open text-3xl mb-2"></i>
+                <p>Nenhum concurso cadastrado no momento.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <dialog id="dialog-situacao" class="rounded-xl shadow-xl p-0 w-full max-w-md backdrop:bg-slate-900/50">
+        <form id="form-situacao" class="p-6 space-y-4">
+            <h2 class="text-lg font-bold">Editar situação</h2>
+            <p id="situacao-nome" class="text-sm text-slate-600"></p>
+            <div>
+                <label for="editar-inicio" class="block text-xs font-semibold text-slate-600 mb-1">Início das inscrições</label>
+                <input type="date" id="editar-inicio" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label for="editar-fim" class="block text-xs font-semibold text-slate-600 mb-1">Fim das inscrições</label>
+                <input type="date" id="editar-fim" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label for="editar-situacao" class="block text-xs font-semibold text-slate-600 mb-1">Situação</label>
+                <select id="editar-situacao" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></select>
+                <p class="text-xs text-slate-500 mt-1">No modo automático, a situação acompanha as datas. A seleção manual não muda sozinha.</p>
+            </div>
+            <p id="erro-situacao" role="alert" class="text-sm text-rose-700"></p>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="document.getElementById('dialog-situacao').close()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm">Cancelar</button>
+                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 mt-12">
+        Painel interativo de estudos desenvolvido para sua aprovação. Os dados salvos ficam armazenados no seu navegador.
+    </footer>
+
+    <!-- Script de Funcionalidades -->
+    <script>
+        const dadosIniciais = [
+            {
+                id: 1,
+                nome: "CRECI-SP (Superior)",
+                banca: "Avança SP",
+                dataProva: "2026-11-29",
+                inicioInscricao: "2026-08-21",
+                fimInscricao: "2026-09-21",
+                link: "https://www.avancasp.org.br"
+            },
+            {
+                id: 2,
+                nome: "SEFAZ/SP",
+                banca: "FCC (Fundação Carlos Chagas)",
+                dataProva: "2026-12-13",
+                link: "https://www.concursosfcc.com.br"
+            },
+            {
+                id: 3,
+                nome: "TCE/SP",
+                banca: "VUNESP",
+                dataProva: "2026-10-11",
+                link: "https://www.tce.sp.gov.br"
+            },
+            {
+                id: 4,
+                nome: "TRT 8ª Região",
+                banca: "FCC (Fundação Carlos Chagas)",
+                dataProva: "2027-01-17",
+                inicioInscricao: "2026-10-05",
+                fimInscricao: "2026-11-05",
+                link: "https://www.concursosfcc.com.br"
+            },
+            {
+                id: 5,
+                nome: "Prefeitura de Limeira",
+                banca: "Avança SP",
+                dataProva: "2026-12-06",
+                inicioInscricao: "2026-07-31",
+                fimInscricao: "2026-09-21",
+                link: "https://avancasp.selecao.net.br"
+            },
+            {
+                id: 6,
+                nome: "TRF 3ª Região",
+                banca: "VUNESP",
+                dataProva: "2027-01-31",
+                inicioInscricao: "2026-11-04",
+                fimInscricao: "2026-11-23",
+                link: "https://www.vunesp.com.br/TRFT2601"
+            },
+            {
+                id: 7,
+                nome: "TJ-SP",
+                banca: "VUNESP",
+                dataProva: "2027-03-14",
+                link: "https://www.vunesp.com.br/"
+            },
+            {
+                id: 8,
+                nome: "CETESB",
+                banca: "FCC (Fundação Carlos Chagas)",
+                dataProva: "2027-02-21",
+                inicioInscricao: "2026-11-12",
+                fimInscricao: "2026-12-14",
+                link: "https://www.concursosfcc.com.br/concursos/cetes126/index.html"
+            }
+        ];
+
+        let concursos = JSON.parse(localStorage.getItem('meus_concursos_v3')) || dadosIniciais;
+        const chaveMigracaoNovosConcursos = 'meus_concursos_trt3_tjsp_v1';
+
+        if (!localStorage.getItem(chaveMigracaoNovosConcursos)) {
+            const nomesExistentes = new Set(concursos.map(c => c.nome.trim().toLocaleLowerCase('pt-BR')));
+            dadosIniciais.slice(5, 7).forEach(concurso => {
+                if (!nomesExistentes.has(concurso.nome.toLocaleLowerCase('pt-BR'))) {
+                    concursos.push(concurso);
+                }
+            });
+            localStorage.setItem(chaveMigracaoNovosConcursos, 'true');
+            localStorage.setItem('meus_concursos_v3', JSON.stringify(concursos));
+        }
+
+        const chaveMigracaoDadosTrf3Tjsp = 'meus_concursos_trf3_tjsp_dados_v1';
+        if (!localStorage.getItem(chaveMigracaoDadosTrf3Tjsp)) {
+            const atualizacoes = [
+                {
+                    nomes: ['trt 3ª região', 'trf 3ª região'],
+                    nome: 'TRF 3ª Região',
+                    banca: 'VUNESP',
+                    dataProva: '2027-01-31',
+                    link: 'https://www.vunesp.com.br/TRFT2601'
+                },
+                {
+                    nomes: ['tj-sp'],
+                    nome: 'TJ-SP',
+                    banca: 'VUNESP',
+                    dataProva: '2027-03-14',
+                    link: 'https://www.vunesp.com.br/'
+                }
+            ];
+
+            atualizacoes.forEach(atualizacao => {
+                const concurso = concursos.find(c =>
+                    atualizacao.nomes.includes(c.nome.trim().toLocaleLowerCase('pt-BR'))
+                );
+                if (!concurso) return;
+
+                concurso.nome = atualizacao.nome;
+                concurso.banca = atualizacao.banca;
+                concurso.dataProva = atualizacao.dataProva;
+                concurso.link = atualizacao.link;
+            });
+
+            localStorage.setItem(chaveMigracaoDadosTrf3Tjsp, 'true');
+            localStorage.setItem('meus_concursos_v3', JSON.stringify(concursos));
+        }
+
+        const chaveMigracaoCetesb = 'meus_concursos_cetesb_2026_v1';
+        if (!localStorage.getItem(chaveMigracaoCetesb)) {
+            if (!concursos.some(c => /\bcetesb\b/i.test(c.nome))) {
+                concursos.push({ ...dadosIniciais[7], id: Date.now() });
+            }
+            localStorage.setItem('meus_concursos_v3', JSON.stringify(concursos));
+            localStorage.setItem(chaveMigracaoCetesb, 'true');
+        }
+
+        const chaveDatasCetesb = 'meus_concursos_cetesb_inscricoes_v1';
+        if (!localStorage.getItem(chaveDatasCetesb)) {
+            concursos.forEach(c => {
+                if (c.nome.trim().toLocaleLowerCase('pt-BR') === 'cetesb' &&
+                    c.dataProva === '2027-02-21' &&
+                    c.link === dadosIniciais[7].link &&
+                    !c.inicioInscricao && !c.fimInscricao && !c.situacaoManual) {
+                    c.inicioInscricao = dadosIniciais[7].inicioInscricao;
+                    c.fimInscricao = dadosIniciais[7].fimInscricao;
+                }
+            });
+            localStorage.setItem('meus_concursos_v3', JSON.stringify(concursos));
+            localStorage.setItem(chaveDatasCetesb, 'true');
+        }
+
+        const chaveDatasConcursos2026 = 'meus_concursos_inscricoes_2026_v1';
+        if (!localStorage.getItem(chaveDatasConcursos2026)) {
+            const atualizacoes = dadosIniciais.filter(c =>
+                ['CRECI-SP (Superior)', 'Prefeitura de Limeira', 'TRT 8ª Região', 'TRF 3ª Região'].includes(c.nome)
+            );
+            concursos.forEach(c => {
+                const referencia = atualizacoes.find(item =>
+                    item.nome === c.nome.trim() && item.dataProva === c.dataProva
+                );
+                if (referencia && !c.inicioInscricao && !c.fimInscricao && !c.situacaoManual) {
+                    c.inicioInscricao = referencia.inicioInscricao;
+                    c.fimInscricao = referencia.fimInscricao;
+                }
+            });
+            localStorage.setItem('meus_concursos_v3', JSON.stringify(concursos));
+            localStorage.setItem(chaveDatasConcursos2026, 'true');
+        }
+
+        function salvarLocalStorage() {
+            localStorage.setItem('meus_concursos_v3', JSON.stringify(concursos));
+        }
+
+        function escaparHtml(valor) {
+            return String(valor).replace(/[&<>"']/g, caractere => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[caractere]);
+        }
+
+        function linkSeguro(valor) {
+            try {
+                const url = new URL(valor);
+                return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+            } catch {
+                return '';
+            }
+        }
+
+        const situacoes = {
+            'aguardando-edital': { texto: 'Aguardando edital', classe: 'bg-violet-100 text-violet-800' },
+            'inscricoes-proximas': { texto: 'Inscrições próximas', classe: 'bg-blue-100 text-blue-800' },
+            'inscricoes-abertas': { texto: 'Inscrições abertas', classe: 'bg-emerald-100 text-emerald-800' },
+            'inscricoes-encerradas': { texto: 'Inscrições encerradas', classe: 'bg-amber-100 text-amber-800' },
+            'prova-realizada': { texto: 'Prova realizada', classe: 'bg-slate-200 text-slate-700' },
+            'nao-informada': { texto: 'Não informada', classe: 'bg-slate-100 text-slate-600' }
+        };
+
+        function dataLocal(data = new Date()) {
+            return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`;
+        }
+
+        function obterSituacao(concurso, hoje = dataLocal()) {
+            if (concurso.situacaoManual && situacoes[concurso.situacaoManual] && concurso.situacaoManual !== 'nao-informada') {
+                return concurso.situacaoManual;
+            }
+            if (concurso.dataProva && concurso.dataProva < hoje) return 'prova-realizada';
+            const inicio = concurso.inicioInscricao;
+            const fim = concurso.fimInscricao;
+            if (inicio && fim && inicio > fim) return 'nao-informada';
+            if (inicio && hoje < inicio) return 'inscricoes-proximas';
+            if (fim && hoje > fim) return 'inscricoes-encerradas';
+            if (inicio && fim && hoje >= inicio && hoje <= fim) return 'inscricoes-abertas';
+            return 'nao-informada';
+        }
+
+        function validarInscricoes(inicio, fim) {
+            return !inicio || !fim || inicio <= fim;
+        }
+
+        function ordenarConcursos() {
+            concursos.sort((a, b) => {
+                if (!a.dataProva) return 1;  // Sem data vai para o final
+                if (!b.dataProva) return -1;
+                return new Date(a.dataProva) - new Date(b.dataProva);
+            });
+        }
+
+        function renderizarTabela() {
+            ordenarConcursos();
+            const tbody = document.getElementById('tabela-concursos');
+            const emptyState = document.getElementById('empty-state');
+            tbody.innerHTML = '';
+
+            if (concursos.length === 0) {
+                emptyState.classList.remove('hidden');
+                document.getElementById('stat-total').innerText = '0';
+                document.getElementById('stat-provas').innerText = '0';
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            document.getElementById('stat-total').innerText = concursos.length;
+
+            let provasProximas = 0;
+            const hoje = dataLocal();
+
+            concursos.forEach((c) => {
+                if (c.dataProva) {
+                    if (c.dataProva >= hoje) provasProximas++;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                const codigoSituacao = obterSituacao(c, hoje);
+                const situacao = situacoes[codigoSituacao];
+                const origemSituacao = c.situacaoManual ? 'Situação informada manualmente' :
+                    codigoSituacao === 'prova-realizada' ? 'A data prevista da prova já passou; confirme no edital.' : 'Situação calculada pelas datas disponíveis';
+
+                let dataFormatada = "A definir";
+                if (c.dataProva) {
+                    const partes = c.dataProva.split('-');
+                    dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+                }
+
+                tr.innerHTML = `
+                    <td class="p-4 text-slate-600">${c.banca ? escaparHtml(c.banca) : '<span class="text-slate-400 italic">Não informada</span>'}</td>
+                    <td class="p-4 text-slate-600">
+                        <span class="bg-slate-100 px-2.5 py-1 rounded-md text-xs font-medium border border-slate-200">
+                            ${escaparHtml(dataFormatada)}
+                        </span>
+                    </td>
+                    <td class="p-4">
+                        <button type="button" onclick="editarSituacao(${c.id})" title="${escaparHtml(origemSituacao)}" aria-label="${situacao.texto}. Editar situação de ${escaparHtml(c.nome)}" class="${situacao.classe} px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap hover:opacity-80">
+                            ${situacao.texto} <i class="fa-solid fa-pen ml-1" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                    <td class="p-4">
+                        ${linkSeguro(c.link) ? `<a href="${escaparHtml(linkSeguro(c.link))}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline flex items-center gap-1 text-xs font-medium"><i class="fa-solid fa-external-link-alt"></i> Acessar Fonte</a>` : '<span class="text-slate-400 italic text-xs">Sem link válido</span>'}
+                    </td>
+                    <td class="p-4 text-right">
+                        <button onclick="editarNomeConcurso(${c.id})" class="text-slate-400 hover:text-indigo-600 p-1.5 transition rounded-lg hover:bg-indigo-50" title="Editar nome do concurso" aria-label="Editar nome do concurso">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="removerConcurso(${c.id})" class="text-slate-400 hover:text-rose-600 p-1.5 transition rounded-lg hover:bg-rose-50" title="Excluir Concurso">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                const nomeCell = document.createElement('td');
+                nomeCell.className = "p-4 font-semibold text-slate-700 flex items-center gap-2";
+                const nomeIcone = document.createElement('i');
+                nomeIcone.className = "fa-solid fa-bookmark text-indigo-500 text-xs";
+                nomeCell.append(nomeIcone, document.createTextNode(c.nome));
+                tr.prepend(nomeCell);
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('stat-provas').innerText = provasProximas;
+        }
+
+        function adicionarConcurso(e) {
+            e.preventDefault();
+            const nome = document.getElementById('nome').value.trim();
+            const link = document.getElementById('link').value.trim();
+            const inicioInscricao = document.getElementById('inicioInscricao').value;
+            const fimInscricao = document.getElementById('fimInscricao').value;
+            if (!nome || (link && !linkSeguro(link))) {
+                alert('Informe um nome e, se houver link, use um endereço http ou https válido.');
+                return;
+            }
+            if (!validarInscricoes(inicioInscricao, fimInscricao)) {
+                alert('O fim das inscrições não pode ser anterior ao início.');
+                return;
+            }
+            const novo = {
+                id: Date.now(),
+                nome,
+                banca: document.getElementById('banca').value.trim(),
+                dataProva: document.getElementById('dataProva').value,
+                inicioInscricao,
+                fimInscricao,
+                situacaoManual: document.getElementById('situacaoManual').value,
+                link
+            };
+
+            concursos.push(novo);
+            salvarLocalStorage();
+            renderizarTabela();
+            document.getElementById('concurso-form').reset();
+        }
+
+        let concursoEmEdicao = null;
+        const dialogSituacao = document.getElementById('dialog-situacao');
+        const selectSituacao = document.getElementById('editar-situacao');
+        selectSituacao.innerHTML = document.getElementById('situacaoManual').innerHTML;
+
+        function editarSituacao(id) {
+            const concurso = concursos.find(c => c.id === id);
+            if (!concurso) return;
+            concursoEmEdicao = concurso;
+            document.getElementById('situacao-nome').textContent = concurso.nome;
+            document.getElementById('editar-inicio').value = concurso.inicioInscricao || '';
+            document.getElementById('editar-fim').value = concurso.fimInscricao || '';
+            selectSituacao.value = concurso.situacaoManual || '';
+            document.getElementById('erro-situacao').textContent = '';
+            dialogSituacao.showModal();
+        }
+
+        document.getElementById('form-situacao').addEventListener('submit', e => {
+            e.preventDefault();
+            const inicio = document.getElementById('editar-inicio').value;
+            const fim = document.getElementById('editar-fim').value;
+            if (!validarInscricoes(inicio, fim)) {
+                document.getElementById('erro-situacao').textContent = 'O fim das inscrições não pode ser anterior ao início.';
+                return;
+            }
+            concursoEmEdicao.inicioInscricao = inicio;
+            concursoEmEdicao.fimInscricao = fim;
+            concursoEmEdicao.situacaoManual = selectSituacao.value;
+            salvarLocalStorage();
+            renderizarTabela();
+            dialogSituacao.close();
+        });
+
+        function removerConcurso(id) {
+            if (confirm("Deseja realmente remover este concurso da lista?")) {
+                concursos = concursos.filter(c => c.id !== id);
+                salvarLocalStorage();
+                renderizarTabela();
+            }
+        }
+
+        function editarNomeConcurso(id) {
+            const concurso = concursos.find(c => c.id === id);
+            if (!concurso) return;
+
+            const novoNome = prompt("Digite o novo nome do concurso:", concurso.nome);
+            if (novoNome === null) return;
+
+            const nomeLimpo = novoNome.trim();
+            if (!nomeLimpo) {
+                alert("O nome do concurso não pode ficar vazio.");
+                return;
+            }
+
+            concurso.nome = nomeLimpo;
+            salvarLocalStorage();
+            renderizarTabela();
+        }
+
+        function restaurarPadroes() {
+            if (confirm("Deseja restaurar a lista inicial padrão?")) {
+                concursos = [...dadosIniciais];
+                salvarLocalStorage();
+                renderizarTabela();
+            }
+        }
+
+        let buscaAtual = 0;
+        const campoBusca = document.getElementById('busca-concurso');
+        const statusBusca = document.getElementById('status-busca');
+        const resultadosBusca = document.getElementById('resultados-busca');
+        campoBusca.addEventListener('input', () => {
+            buscaAtual++;
+            resultadosBusca.replaceChildren();
+            statusBusca.textContent = '';
+        });
+        campoBusca.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                pesquisarConcursos();
+            }
+        });
+
+        async function pesquisarConcursos() {
+            const busca = ++buscaAtual;
+            const termo = campoBusca.value.trim();
+            resultadosBusca.replaceChildren();
+            if (!termo) {
+                statusBusca.textContent = 'Digite o nome ou cole o link de uma notícia da PCI.';
+                return;
+            }
+            statusBusca.textContent = 'Pesquisando na PCI Concursos...';
+            try {
+                const base = document.querySelector('meta[name="concursos-api"]').content;
+                const url = new URL('/api/concursos', base || location.origin);
+                url.searchParams.set('q', termo);
+                const resposta = await fetch(url);
+                if (!resposta.ok) {
+                    let mensagem = 'Não foi possível consultar a pesquisa. Verifique se o serviço está disponível.';
+                    if (resposta.headers.get('content-type')?.includes('application/json')) {
+                        const erro = await resposta.json();
+                        mensagem = erro.erro || mensagem;
+                    }
+                    throw new Error(mensagem);
+                }
+                const dados = await resposta.json();
+                if (!Array.isArray(dados.resultados)) throw new Error('O serviço retornou uma resposta inesperada.');
+                if (busca !== buscaAtual) return;
+                statusBusca.textContent = dados.resultados.length
+                    ? 'Este é o concurso que você está procurando? Confira a fonte antes de confirmar.'
+                    : 'Nenhum concurso encontrado. Tente outro nome ou cadastre manualmente.';
+                dados.resultados.forEach(mostrarResultado);
+            } catch (erro) {
+                if (busca !== buscaAtual) return;
+                console.error('Erro ao pesquisar concursos:', erro);
+                statusBusca.textContent = 'Não foi possível pesquisar: ' + erro.message + ' Você pode cadastrar manualmente.';
+            }
+        }
+
+        function mostrarResultado(concurso) {
+            const card = document.createElement('div');
+            card.className = 'bg-white border border-indigo-200 rounded-lg p-4 text-sm space-y-2';
+            const titulo = document.createElement('h3');
+            titulo.className = 'font-bold text-slate-800';
+            titulo.textContent = concurso.nome;
+            const detalhes = document.createElement('p');
+            const data = concurso.dataProva ? concurso.dataProva.split('-').reverse().join('/') : 'Não identificada';
+            detalhes.textContent = `Banca: ${concurso.banca || 'Não identificada'} · Prova: ${data}`;
+            const situacao = document.createElement('p');
+            situacao.textContent = `Situação: ${situacoes[obterSituacao(concurso)].texto}`;
+            const fonte = document.createElement('a');
+            fonte.href = linkSeguro(concurso.link);
+            fonte.target = '_blank';
+            fonte.rel = 'noopener noreferrer';
+            fonte.className = 'text-indigo-600 underline';
+            fonte.textContent = 'Conferir notícia na PCI';
+            const aviso = document.createElement('p');
+            aviso.className = 'text-amber-700 text-xs';
+            aviso.textContent = concurso.aviso || 'Confira a banca e a data no edital; a notícia pode estar desatualizada.';
+            const botoes = document.createElement('div');
+            botoes.className = 'flex flex-wrap gap-2 pt-1';
+            const confirmar = document.createElement('button');
+            confirmar.type = 'button';
+            confirmar.className = 'bg-indigo-600 text-white px-3 py-2 rounded-lg';
+            confirmar.textContent = 'Sim, adicionar';
+            confirmar.addEventListener('click', () => {
+                concursos.push({ ...concurso, id: Date.now() });
+                salvarLocalStorage();
+                renderizarTabela();
+                resultadosBusca.replaceChildren();
+                statusBusca.textContent = 'Concurso adicionado à sua lista.';
+            });
+            const editar = document.createElement('button');
+            editar.type = 'button';
+            editar.className = 'border border-slate-300 px-3 py-2 rounded-lg';
+            editar.textContent = 'Revisar antes de salvar';
+            editar.addEventListener('click', () => {
+                ['nome', 'banca', 'dataProva', 'link', 'inicioInscricao', 'fimInscricao', 'situacaoManual'].forEach(campo => {
+                    document.getElementById(campo).value = concurso[campo] || '';
+                });
+                document.getElementById('nome').focus();
+                resultadosBusca.replaceChildren();
+                statusBusca.textContent = 'Revise os campos abaixo e clique em Salvar Concurso.';
+            });
+            botoes.append(confirmar, editar);
+            card.append(titulo, detalhes, situacao, fonte, aviso, botoes);
+            resultadosBusca.append(card);
+        }
+
+        // Inicializar aplicação
+        renderizarTabela();
+        function agendarAtualizacao() {
+            const proximaMeiaNoite = new Date();
+            proximaMeiaNoite.setHours(24, 0, 0, 0);
+            setTimeout(() => {
+                renderizarTabela();
+                agendarAtualizacao();
+            }, proximaMeiaNoite - new Date());
+        }
+        agendarAtualizacao();
+    </script>
+</body>
+</html>
