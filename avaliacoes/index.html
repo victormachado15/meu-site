@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gerenciar avaliações</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f1f5f9; color: #1e293b; font: 16px/1.5 Arial, sans-serif; }
+        main { max-width: 720px; margin: 32px auto; padding: 24px; background: white; border-radius: 12px; }
+        h1 { color: #991b1b; }
+        label { display: block; font-weight: bold; margin-top: 16px; }
+        input, button { width: 100%; padding: 10px; font: inherit; margin-top: 6px; }
+        button { background: #991b1b; color: white; border: 0; border-radius: 4px; cursor: pointer; }
+        button:disabled { opacity: .6; cursor: wait; }
+        .aviso { padding: 12px; background: #fef3c7; border-left: 4px solid #d97706; }
+        #resultado { white-space: pre-wrap; }
+        @media (max-width: 760px) { main { margin: 0; border-radius: 0; } }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Gerenciar avaliações</h1>
+        <p>Prepare uma prova criptografada para compartilhar pelo link direto. O processamento ocorre neste navegador; o arquivo e as senhas não são enviados pelo gerenciador.</p>
+        <p class="aviso"><strong>Importante:</strong> esta página não altera arquivos do GitHub. Somente quem tem acesso ao repositório pode publicar alterações. Um HTML original publicado sem criptografia continua acessível, inclusive no histórico e em cópias.</p>
+        <form id="formulario">
+            <label for="arquivo">HTML da prova original ou protegida</label>
+            <input id="arquivo" type="file" accept=".html,text/html" required>
+            <label for="senhaAtual">Senha atual (somente para trocar a senha de uma prova protegida)</label>
+            <input id="senhaAtual" type="password" autocomplete="off">
+            <label for="senhaNova">Nova senha da prova</label>
+            <input id="senhaNova" type="password" autocomplete="new-password" minlength="12" required>
+            <label for="confirmacao">Confirme a nova senha</label>
+            <input id="confirmacao" type="password" autocomplete="new-password" minlength="12" required>
+            <p>Use uma senha forte e única, com pelo menos 12 caracteres. Não a publique no repositório.</p>
+            <button type="submit">Gerar HTML protegido</button>
+        </form>
+        <p id="resultado" role="status" aria-live="polite"></p>
+        <p>Para publicar, substitua o arquivo da prova pelo HTML baixado e publique o repositório. Para trocar a senha, selecione o HTML protegido, informe a senha atual e repita o processo. Guarde uma cópia privada do original.</p>
+        <p>O GitHub Pages não revoga arquivos antigos ou cópias já baixadas. Quem receber a senha também poderá compartilhar a prova.</p>
+    </main>
+    <script>
+        const ITERACOES = 600000;
+
+        function paraBase64(bytes) {
+            let texto = '';
+            for (let i = 0; i < bytes.length; i += 32768) {
+                texto += String.fromCharCode(...bytes.subarray(i, i + 32768));
+            }
+            return btoa(texto);
+        }
+
+        function deBase64(texto) {
+            return Uint8Array.from(atob(texto), caractere => caractere.charCodeAt(0));
+        }
+
+        async function derivarChave(senha, salt, usos) {
+            const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(senha), 'PBKDF2', false, ['deriveKey']);
+            return crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt, iterations: 600000, hash: 'SHA-256' },
+                material, { name: 'AES-GCM', length: 256 }, false, usos
+            );
+        }
+
+        async function descriptografar(dados, senha) {
+            if (dados.formato !== 'avaliacao-criptografada-v1' || dados.iteracoes !== 600000) {
+                throw new Error('Formato de prova protegida não reconhecido.');
+            }
+            const chave = await derivarChave(senha, deBase64(dados.salt), ['decrypt']);
+            const conteudo = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: deBase64(dados.iv) }, chave, deBase64(dados.conteudo)
+            );
+            return new TextDecoder('utf-8', { fatal: true }).decode(conteudo);
+        }
+
+        async function abrirProva(evento) {
+            evento.preventDefault();
+            const botao = document.getElementById('abrir');
+            const mensagem = document.getElementById('mensagem');
+            botao.disabled = true;
+            mensagem.textContent = 'Verificando senha...';
+            try {
+                if (!window.isSecureContext || !crypto.subtle) {
+                    throw new Error('Abra esta página por HTTPS ou em localhost para usar a criptografia.');
+                }
+                const dados = JSON.parse(document.getElementById('dados-prova-protegida').textContent);
+                const html = await descriptografar(dados, document.getElementById('senha').value);
+                document.open();
+                document.write(html);
+                document.close();
+            } catch (erro) {
+                mensagem.textContent = erro.name === 'OperationError'
+                    ? 'Senha incorreta ou arquivo danificado.'
+                    : `Não foi possível abrir a prova: ${erro.message}`;
+                botao.disabled = false;
+            }
+        }
+
+        function criarPaginaProtegida(dados) {
+            return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Avaliação protegida</title>
+    <style>
+        body { background: #f1f5f9; color: #1e293b; font: 16px/1.5 Arial, sans-serif; }
+        main { max-width: 480px; margin: 48px auto; padding: 24px; background: white; border-radius: 12px; }
+        h1 { color: #991b1b; }
+        input, button { box-sizing: border-box; width: 100%; padding: 10px; margin-top: 12px; font: inherit; }
+        button { background: #991b1b; color: white; border: 0; border-radius: 4px; cursor: pointer; }
+        button:disabled { opacity: .6; cursor: wait; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Avaliação protegida</h1>
+        <form id="acesso">
+            <label for="senha">Digite a senha fornecida pelo professor:</label>
+            <input id="senha" type="password" required autofocus autocomplete="off">
+            <button id="abrir" type="submit">Abrir prova</button>
+        </form>
+        <p id="mensagem" role="status" aria-live="polite"></p>
+    </main>
+    <script type="application/json" id="dados-prova-protegida">${JSON.stringify(dados)}<\/script>
+    <script>
+        ${deBase64.toString()}
+        ${derivarChave.toString()}
+        ${descriptografar.toString()}
+        ${abrirProva.toString()}
+        document.getElementById('acesso').addEventListener('submit', abrirProva);
+    <\/script>
+</body>
+</html>`;
+        }
+
+        document.getElementById('formulario').addEventListener('submit', async evento => {
+            evento.preventDefault();
+            const formulario = evento.currentTarget;
+            const botao = formulario.querySelector('button');
+            const resultado = document.getElementById('resultado');
+            const arquivo = document.getElementById('arquivo').files[0];
+            const senhaAtual = document.getElementById('senhaAtual').value;
+            const senhaNova = document.getElementById('senhaNova').value;
+            if (senhaNova !== document.getElementById('confirmacao').value) {
+                resultado.textContent = 'As senhas novas não coincidem.';
+                return;
+            }
+            botao.disabled = true;
+            resultado.textContent = 'Preparando a prova protegida...';
+            try {
+                if (!window.isSecureContext || !crypto.subtle) {
+                    throw new Error('Abra esta página por HTTPS ou em localhost para usar a criptografia.');
+                }
+                let html = await arquivo.text();
+                const documento = new DOMParser().parseFromString(html, 'text/html');
+                const dadosAnteriores = documento.getElementById('dados-prova-protegida');
+                if (dadosAnteriores) {
+                    if (!senhaAtual) throw new Error('Informe a senha atual da prova protegida.');
+                    html = await descriptografar(JSON.parse(dadosAnteriores.textContent), senhaAtual);
+                }
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const chave = await derivarChave(senhaNova, salt, ['encrypt']);
+                const conteudo = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, chave, new TextEncoder().encode(html));
+                const dados = {
+                    formato: 'avaliacao-criptografada-v1',
+                    iteracoes: ITERACOES,
+                    salt: paraBase64(salt),
+                    iv: paraBase64(iv),
+                    conteudo: paraBase64(new Uint8Array(conteudo))
+                };
+                const url = URL.createObjectURL(new Blob([criarPaginaProtegida(dados)], { type: 'text/html;charset=utf-8' }));
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = arquivo.name;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 60000);
+                formulario.reset();
+                resultado.textContent = 'HTML protegido gerado. Substitua o arquivo da prova pelo download e publique novamente.';
+            } catch (erro) {
+                resultado.textContent = erro.name === 'OperationError'
+                    ? 'Senha atual incorreta ou arquivo protegido danificado.'
+                    : `Não foi possível gerar a prova: ${erro.message}`;
+            } finally {
+                botao.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
