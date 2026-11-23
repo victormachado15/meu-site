@@ -88,6 +88,9 @@
                 document.open();
                 document.write(html);
                 document.close();
+                const identificacao = document.getElementById('alunoNome');
+                const painel = identificacao && identificacao.closest('.no-print');
+                if (painel) painel.classList.remove('no-print');
             } catch (erro) {
                 mensagem.textContent = erro.name === 'OperationError'
                     ? 'Senha incorreta ou arquivo danificado.'

@@ -132,7 +132,7 @@
                 </div>
 
                 <!-- Identificação do Aluno -->
-                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo do Aluno</label>
                         <input type="text" id="alunoNome" class="w-full p-2 border border-slate-300 rounded text-sm bg-white" placeholder="Digite seu nome completo">
@@ -777,9 +777,10 @@
                     <p><strong>Matéria:</strong> ${escaparHtml(document.getElementById('materia').value)}</p>
                     <p><strong>Professor(a):</strong> ${escaparHtml(document.getElementById('professor').value)}</p>
                     <p><strong>Turma:</strong> ${escaparHtml(document.getElementById('turma').value)}</p>
+                    <p><strong>Valor total:</strong> ${escaparHtml(document.getElementById('valorTotal').value)} pts</p>
                 </div>
             </div>
-            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo</label>
                     <input type="text" id="alunoNome" class="w-full p-2 border rounded text-sm bg-white" placeholder="Seu nome">
@@ -790,7 +791,7 @@
                 </div>
             </div>
             <div class="mb-6 p-3 bg-red-50 border-l-4 border-red-800 text-xs text-red-900 rounded">
-                <strong>Instruções:</strong> ${escaparHtml(document.getElementById('instrucoes').value)}
+                <strong>Instruções:</strong> <span class="whitespace-pre-wrap">${escaparHtml(document.getElementById('instrucoes').value)}</span>
             </div>
             <div class="space-y-6">
                 ${containerHtml}
