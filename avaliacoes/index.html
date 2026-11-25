@@ -86,11 +86,15 @@
                 const dados = JSON.parse(document.getElementById('dados-prova-protegida').textContent);
                 const html = await descriptografar(dados, document.getElementById('senha').value);
                 document.open();
+                const mostrarIdentificacao = () => {
+                    const identificacao = document.getElementById('alunoNome');
+                    const painel = identificacao && identificacao.closest('.no-print');
+                    if (painel) painel.classList.remove('no-print');
+                };
+                document.addEventListener('DOMContentLoaded', mostrarIdentificacao, { once: true });
                 document.write(html);
                 document.close();
-                const identificacao = document.getElementById('alunoNome');
-                const painel = identificacao && identificacao.closest('.no-print');
-                if (painel) painel.classList.remove('no-print');
+                mostrarIdentificacao();
             } catch (erro) {
                 mensagem.textContent = erro.name === 'OperationError'
                     ? 'Senha incorreta ou arquivo danificado.'
